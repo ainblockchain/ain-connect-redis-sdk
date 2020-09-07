@@ -1,0 +1,54 @@
+{
+  "name": "ain-connect-sdk",
+  "version": "1.0.0",
+  "description": "SDK for AIN Connect functionality",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ainblockchain/ain-connect-sdk.git"
+  },
+  "author": "AIN Dev Team",
+  "bugs": {
+    "url": "https://github.com/ainblockchain/ain-connect-sdk/issues"
+  },
+  "homepage": "https://github.com/ainblockchain/ain-connect-sdk#readme",
+  "keywords": [
+    "ainetwork",
+    "ain",
+    "ainconnect"
+  ],
+  "scripts": {
+    "test": "jest",
+    "build": "./build.sh",
+    "start": "tsc && node dist/index.js serve",
+    "lint": "eslint src/*.ts src/**/*.ts src/**/**/*.ts src/**/**/**/*.ts",
+    "lint:fix": "eslint --fix src/*.ts src/**/*.ts src/**/**/*.ts src/**/**/**/*.ts"
+  },
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "license": "MIT",
+  "files": [
+    "dist/"
+  ],
+  "devDependencies": {
+    "@types/jest": "^26.0.7",
+    "@types/redis": "^2.8.27",
+    "@typescript-eslint/eslint-plugin": "^2.22.0",
+    "@typescript-eslint/parser": "^2.22.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.20.1",
+    "husky": "^4.2.5",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.9.7"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn test && yarn lint"
+    }
+  },
+  "dependencies": {
+    "nanoid": "^3.1.12",
+    "redis": "^3.0.2"
+  }
+}
