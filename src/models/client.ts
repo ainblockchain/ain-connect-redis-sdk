@@ -1,6 +1,7 @@
-import redis from 'redis';
 import { customAlphabet } from 'nanoid';
+import { ClientOpts } from 'redis';
 import * as types from '../common/types';
+import RedisClient from '../common/redis';
 
 function getRandomRequestId() {
   const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 25);
@@ -8,46 +9,50 @@ function getRandomRequestId() {
 }
 
 export default class Client {
-  private redisClient: redis.RedisClient;
+  private redisClient: RedisClient;
 
-  constructor(url: string, options?: redis.ClientOpts) {
-    this.redisClient = redis.createClient(url, options);
-    // Redis Keyspace Notifications: https://redis.io/topics/notifications
-    this.redisClient.config('set', 'notify-keyspace-events', 'KEA');
+  constructor(options: ClientOpts) {
+    this.redisClient = new RedisClient(options);
   }
 
-  private async listenKey() {
-    return new Promise((resolve, reject) => {
-      this.redisClient.subscribe('__keyevent@0__:set', 'response_key');
-      this.redisClient.on('message', (channel, key) => {
-        this.redisClient.unsubscribe('__keyevent@0__:set', 'response_key');
-      });
-    });
+  private async sendRequest(type: string, params: any) {
+    const requestId = getRandomRequestId();
+    const { clusterName } = params;
+    const key = `worker:request_queue:${clusterName}:${requestId}`;
+    const value = { type, params };
+    await this.redisClient.set(key, value);
+    const reply = this.redisClient.once(`${key}:response`);
+    return reply;
   }
 
   public async deploy(params: types.DeployParams) {
-    const requestId = getRandomRequestId();
-    return requestId;
+    const res = await this.sendRequest('deploy', params);
+    return res;
   }
 
   public async redeploy(params: types.RedeployParams) {
-    return null;
+    const res = await this.sendRequest('redeploy', params);
+    return res;
   }
 
   public async createStorage(params: types.CreateStorageParams) {
-    return null;
+    const res = await this.sendRequest('createStorage', params);
+    return res;
   }
 
   public async deleteStorage(params: types.DeleteStorageParams) {
-    return null;
+    const res = await this.sendRequest('deleteStorage', params);
+    return res;
   }
 
   public async getContainerConfig(params: types.GetContainerInfoParams) {
-    return null;
+    const res = await this.sendRequest('getContainerConfig', params);
+    return res;
   }
 
   public async execKubeCtl(params: any) {
-    return null;
+    const res = await this.sendRequest('execKubeCtl', params);
+    return res;
   }
 
   public async getClusterInfo(params: types.GetClusterInfoParams) {
