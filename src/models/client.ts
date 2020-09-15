@@ -57,7 +57,7 @@ export default class Client {
     return res;
   }
 
-  public async getContainerConfig(params: types.GetContainerInfoParams) {
+  public async getContainerInfo(params: types.GetContainerInfoParams) {
     const res = await this.sendRequest('getContainerConfig', params);
     return res;
   }
@@ -65,17 +65,5 @@ export default class Client {
   public async execKubeCtl(params: any) {
     const res = await this.sendRequest('execKubeCtl', params);
     return res;
-  }
-
-  public async getClusterInfo(params: types.GetClusterInfoParams) {
-    return null;
-  }
-
-  public async getClusterList(params: types.GetClusterListParams) {
-    return null;
-  }
-
-  public async getHistory(params: types.GetHistoryParams) {
-    return null;
   }
 }

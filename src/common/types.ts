@@ -146,37 +146,3 @@ export type GetClusterInfoReturn = {
   statusCode: number;
   clusterInfo: ClusterRegisterParams;
 }
-
-export type GetClusterListParams = {
-  targetAddress?: string;
-  clusterOption?: {
-    isSingleNode: boolean;
-    isPrivate: boolean;
-    https: boolean;
-    istio: boolean;
-    hwSpec?: {
-      isGpu?: boolean;
-      isStorage?: boolean;
-    }
-  }
-}
-
-export type GetClusterListReturn = {
-  statusCode: number;
-  clusterInfo: ClusterRegisterParams[];
-}
-
-export type GetHistoryParams = {
-  address: string;
-}
-
-export type GetHistoryReturn = {
-  createdAt: string;
-  finishedAt: string;
-  requestId: string;
-  clusterName: string;
-  workerAdress: string;
-  price: number;
-  statusCode: number;
-  reverseAmount: string;
-}
