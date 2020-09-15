@@ -1,14 +1,15 @@
-import redis from 'redis';
+import { ClientOpts } from 'redis';
+import RedisClient from '../common/redis';
 import * as types from '../common/types';
 import * as error from '../common/error';
 
 export default class Worker {
-  private redisClient: redis.RedisClient;
+  private redisClient: RedisClient;
 
   private listenMethodList: types.workerListenMethod;
 
-  constructor(url: string, options?: redis.ClientOpts) {
-    this.redisClient = redis.createClient(url, options);
+  constructor(options: ClientOpts) {
+    this.redisClient = new RedisClient(options);
   }
 
   public async getClusterInfo(clusterName: string) {
@@ -20,11 +21,33 @@ export default class Worker {
   }
 
   public async writePayload(payload: object, dbpath: string) {
-    return null;
+    await this.redisClient.set(dbpath, payload);
   }
 
   public listenReqeust(clusterName: string, methods: types.workerListenMethod) {
+    const pattern = `worker:request_queue:${clusterName}:*`;
     this.listenMethodList = methods;
+    this.redisClient.on(pattern, async (err, key, value) => {
+      const resPath = `${key}:response`;
+      const { type, payload } = value;
+      if (err) {
+        await this.writePayload({
+          statusCode: error.STATUS_CODE.unexpected,
+          errMessage: err,
+        }, resPath);
+      } else if (type && this.listenMethodList[type]) {
+        const res = await this.listenMethodList[type](JSON.parse(payload));
+        await this.writePayload({
+          statusCode: error.STATUS_CODE.success,
+          result: JSON.stringify(res),
+        }, resPath);
+      } else {
+        await this.writePayload({
+          statusCode: error.STATUS_CODE.invalidParams,
+          errMessage: err,
+        }, resPath);
+      }
+    });
     return null;
   }
 

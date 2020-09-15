@@ -1,3 +1,7 @@
+export interface RedisCallback {
+  (err: Error | null, key: string, value: any): void
+}
+
 export type EnvType = 'prod' | 'staging';
 
 export type ListenMethodList = 'deploy' | 'redeploy' | 'undeploy'

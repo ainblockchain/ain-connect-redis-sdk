@@ -1,4 +1,5 @@
 import redis from 'redis';
+import { RedisCallback } from './types';
 
 export default class RedisClient {
   private client: redis.RedisClient;
@@ -16,14 +17,16 @@ export default class RedisClient {
     return this.client;
   }
 
-  public on(pattern: string, callback: redis.Callback<any>) {
+  public on(pattern: string, callback: RedisCallback) {
     this.subscriber.psubscribe(`__keyspace@0__:${pattern}`);
     this.subscriber.on('pmessage', (_pattern, channel, message) => {
       // _pattern : __keyspace@0__:${pattern}
       // channel : pattern matched value
       // message : type of event (ex. set, hmset)
       const key = channel.slice(15);
-      this.client.hgetall(key, callback);
+      this.client.hgetall(key, (err, value) => {
+        callback(err, key, value);
+      });
     });
   }
 
