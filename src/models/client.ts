@@ -19,7 +19,7 @@ export default class Client {
     const requestId = getRandomRequestId();
     const { clusterName } = params;
     const key = `worker:request_queue:${clusterName}:${requestId}`;
-    const value = { type, params };
+    const value = { type, payload: JSON.stringify(params) };
     await this.redisClient.set(key, value);
     const reply = this.redisClient.once(`${key}:response`);
     return reply;
