@@ -13,11 +13,29 @@ export default class Worker {
   }
 
   public async getClusterInfo(clusterName: string) {
-    return null;
+    const infoKey = `worker:info:${clusterName}`;
+    const result = await this.redisClient.get(infoKey);
+
+    result.endpointConfig = JSON.parse(result.endpointConfig);
+    result.nodePool = JSON.parse(result.nodePool);
+    return result;
   }
 
   public async listenClusterInfo(clusterName: string, callback: Function) {
-    return null;
+    const infoKey = `worker:info:${clusterName}`;
+    this.redisClient.on(infoKey, (err, key, value) => {
+      if (!err) {
+        // key -> worker:info:${clusterName}
+        const parseValue = value;
+        if (value.endpointConfig) {
+          parseValue.endpointConfig = JSON.parse(value.endpointConfig);
+        }
+        if (value.nodePool) {
+          parseValue.endpointConfig = JSON.parse(value.nodePool);
+        }
+        callback(key, parseValue);
+      }
+    });
   }
 
   public async writePayload(payload: object, dbpath: string) {
@@ -53,10 +71,14 @@ export default class Worker {
   }
 
   public async registerCluster(option: Types.ClusterRegisterParams) {
-    return null;
+    // TODO: need stringify for endpointConfig, nodePool?
+    await this.writePayload(option, `worker:info:${option.clusterName}`);
   }
 
   public async updateClusterInfo(clusterName: string, allowAdress?: string[], price?: number) {
-    return null;
+    await this.writePayload({
+      allowAdress,
+      price,
+    }, `worker:info:${clusterName}`);
   }
 }

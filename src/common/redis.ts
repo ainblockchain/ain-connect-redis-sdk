@@ -30,6 +30,10 @@ export default class RedisClient {
     });
   }
 
+  public off(pattern: string) {
+    this.subscriber.punsubscribe(`__keyspace@0__:${pattern}`);
+  }
+
   public once(pattern: string): Promise<any> {
     return new Promise((resolve, reject) => {
       this.subscriber.subscribe(`__keyspace@0__:${pattern}`);
@@ -47,11 +51,23 @@ export default class RedisClient {
     });
   }
 
+  public get(key: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.client.hgetall(key, (err, value) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(value);
+        }
+      });
+    });
+  }
+
   public set(key: string, value: object) {
     return new Promise((resolve, reject) => {
       this.client.hmset(key, { ...value }, (err) => {
         if (err) {
-          reject();
+          reject(err);
         } else {
           resolve();
         }
