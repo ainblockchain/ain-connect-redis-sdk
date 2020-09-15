@@ -2,6 +2,7 @@ import { customAlphabet } from 'nanoid';
 import { ClientOpts } from 'redis';
 import * as types from '../common/types';
 import RedisClient from '../common/redis';
+import * as Error from '../common/error';
 
 function getRandomRequestId() {
   const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 25);
@@ -19,10 +20,21 @@ export default class Client {
     const requestId = getRandomRequestId();
     const { clusterName } = params;
     const key = `worker:request_queue:${clusterName}:${requestId}`;
+    // write payload as stringified form
     const value = { type, payload: JSON.stringify(params) };
     await this.redisClient.set(key, value);
-    const reply = this.redisClient.once(`${key}:response`);
-    return reply;
+    const reply = await this.redisClient.once(`${key}:response`);
+    if (reply.statusCode === Error.STATUS_CODE.success) {
+      return {
+        statusCode: Error.STATUS_CODE.success,
+        result: JSON.parse(reply.result),
+      };
+    }
+
+    return {
+      statusCode: reply.statusCode,
+      errMessage: reply.errMessage,
+    };
   }
 
   public async deploy(params: types.DeployParams) {

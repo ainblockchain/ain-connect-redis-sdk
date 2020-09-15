@@ -1,12 +1,12 @@
 import { ClientOpts } from 'redis';
 import RedisClient from '../common/redis';
-import * as types from '../common/types';
-import * as error from '../common/error';
+import * as Types from '../common/types';
+import * as Error from '../common/error';
 
 export default class Worker {
   private redisClient: RedisClient;
 
-  private listenMethodList: types.workerListenMethod;
+  private listenMethodList: Types.workerListenMethod;
 
   constructor(options: ClientOpts) {
     this.redisClient = new RedisClient(options);
@@ -32,18 +32,19 @@ export default class Worker {
       const { type, payload } = value;
       if (err) {
         await this.writePayload({
-          statusCode: error.STATUS_CODE.unexpected,
+          statusCode: Error.STATUS_CODE.unexpected,
           errMessage: err,
         }, resPath);
       } else if (type && this.listenMethodList[type]) {
+        // parse stringified payload
         const res = await this.listenMethodList[type](JSON.parse(payload));
         await this.writePayload({
-          statusCode: error.STATUS_CODE.success,
+          statusCode: Error.STATUS_CODE.success,
           result: JSON.stringify(res),
         }, resPath);
       } else {
         await this.writePayload({
-          statusCode: error.STATUS_CODE.invalidParams,
+          statusCode: Error.STATUS_CODE.invalidParams,
           errMessage: err,
         }, resPath);
       }
@@ -51,7 +52,7 @@ export default class Worker {
     return null;
   }
 
-  public async registerCluster(option: types.ClusterRegisterParams) {
+  public async registerCluster(option: Types.ClusterRegisterParams) {
     return null;
   }
 

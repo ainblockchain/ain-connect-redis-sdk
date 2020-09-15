@@ -30,7 +30,7 @@ export default class RedisClient {
     });
   }
 
-  public once(pattern: string) {
+  public once(pattern: string): Promise<any> {
     return new Promise((resolve, reject) => {
       this.subscriber.subscribe(`__keyspace@0__:${pattern}`);
       this.subscriber.on('pmessage', (_pattern, channel, message) => {
