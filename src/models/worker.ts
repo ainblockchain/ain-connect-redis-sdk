@@ -8,7 +8,7 @@ export default class Worker {
 
   private listenMethodList: Types.workerListenMethod;
 
-  constructor(options: ClientOpts) {
+  constructor(options?: ClientOpts) {
     this.redisClient = new RedisClient(options);
   }
 

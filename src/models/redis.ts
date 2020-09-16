@@ -6,7 +6,7 @@ export default class RedisClient {
 
   private subscriber: redis.RedisClient
 
-  constructor(options: redis.ClientOpts) {
+  constructor(options?: redis.ClientOpts) {
     // Cannot use 'get/set' command in the context of a subscribed client
     // We need both 'get/set' client and 'subscribe' client.
     this.client = redis.createClient(options);

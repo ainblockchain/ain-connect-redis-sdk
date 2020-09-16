@@ -12,7 +12,7 @@ function getRandomRequestId() {
 export default class Client {
   private redisClient: RedisClient;
 
-  constructor(options: ClientOpts) {
+  constructor(options?: ClientOpts) {
     this.redisClient = new RedisClient(options);
   }
 
