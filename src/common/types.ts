@@ -1,5 +1,5 @@
 export interface RedisCallback {
-  (err: Error | null, key: string, value: any): void
+  (err: Error | null, key: string | null, value: any): void
 }
 
 export type EnvType = 'prod' | 'staging';
