@@ -1,5 +1,5 @@
 import { ClientOpts } from 'redis';
-import RedisClient from '../common/redis';
+import RedisClient from './redis';
 import * as Types from '../common/types';
 import * as Error from '../common/error';
 
