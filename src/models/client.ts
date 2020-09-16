@@ -1,7 +1,7 @@
 import { customAlphabet } from 'nanoid';
 import { ClientOpts } from 'redis';
 import * as types from '../common/types';
-import RedisClient from '../common/redis';
+import RedisClient from './redis';
 import * as Error from '../common/error';
 
 function getRandomRequestId() {
