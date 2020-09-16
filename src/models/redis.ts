@@ -1,5 +1,5 @@
 import redis from 'redis';
-import { RedisCallback } from './types';
+import { RedisCallback } from '../common/types';
 
 export default class RedisClient {
   private client: redis.RedisClient;
