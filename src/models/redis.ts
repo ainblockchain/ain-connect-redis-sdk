@@ -1,16 +1,42 @@
 import Redis from 'redis';
 import { RedisCallback } from '../common/types';
 
+interface CallbackTable {
+  [key: string]: RedisCallback
+}
+
 export default class RedisClient {
+  private callbackTable: CallbackTable;
+
   private client: Redis.RedisClient;
 
-  private subscriber: Redis.RedisClient
+  private onSub: Redis.RedisClient
+
+  private onceSub: Redis.RedisClient
 
   constructor(options?: Redis.ClientOpts) {
     // Cannot use 'get/set' command in the context of a subscribed client
     // We need both 'get/set' client and 'subscribe' client.
     this.client = Redis.createClient(options);
-    this.subscriber = Redis.createClient(options);
+    this.onSub = Redis.createClient(options);
+    this.onceSub = Redis.createClient(options);
+    this.callbackTable = {};
+
+    this.onSub.on('pmessage', (pattern, channel, message) => {
+      // _pattern : __keyspace@0__:${pattern}
+      // channel : pattern matched value
+      // message : type of event (ex. set, hset)
+      const _pattern = pattern.slice(15);
+      if ((message === 'set' || message === 'hset')
+          && this.callbackTable[_pattern]) {
+        const key = channel.slice(15);
+        this.get(key).then((value) => {
+          this.callbackTable[_pattern](null, key, value);
+        }).catch((err) => {
+          this.callbackTable[_pattern](err, null, null);
+        });
+      }
+    });
   }
 
   public getClient() {
@@ -18,32 +44,23 @@ export default class RedisClient {
   }
 
   public on(pattern: string, callback: RedisCallback) {
-    this.subscriber.psubscribe(`__keyspace@0__:${pattern}`);
-    this.subscriber.on('pmessage', (_pattern, channel, message) => {
-      // _pattern : __keyspace@0__:${pattern}
-      // channel : pattern matched value
-      // message : type of event (ex. set, hset)
-      if (message === 'set' || message === 'hset') {
-        const key = channel.slice(15);
-        this.get(key).then((value) => {
-          callback(null, key, value);
-        }).catch((err) => {
-          callback(err, null, null);
-        });
-      }
-    });
+    if (!this.callbackTable[pattern]) {
+      this.callbackTable[pattern] = callback;
+      this.onSub.psubscribe(`__keyspace@0__:${pattern}`);
+    }
   }
 
   public off(pattern: string) {
-    this.subscriber.punsubscribe(`__keyspace@0__:${pattern}`);
+    this.onSub.punsubscribe(`__keyspace@0__:${pattern}`);
+    delete this.callbackTable[pattern];
   }
 
   public once(pattern: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.subscriber.psubscribe(`__keyspace@0__:${pattern}`);
-      this.subscriber.on('pmessage', (_pattern, channel, message) => {
+      this.onceSub.psubscribe(`__keyspace@0__:${pattern}`);
+      this.onceSub.on('pmessage', (_pattern, channel, message) => {
         if (message === 'set' || message === 'hset') {
-          this.subscriber.unsubscribe(`__keyspace@0__:${pattern}`);
+          this.onceSub.unsubscribe(`__keyspace@0__:${pattern}`);
           const key = channel.slice(15);
           this.get(key).then((value) => {
             resolve(value);

@@ -2,7 +2,7 @@ import RedisClient from '../../models/redis';
 
 let redisClient: RedisClient;
 
-describe('redis string test', () => {
+describe('redis test', () => {
   beforeAll(() => {
     // need local redis server for test
     redisClient = new RedisClient();
@@ -12,6 +12,7 @@ describe('redis string test', () => {
     done();
   });
 
+  // string
   it('set/get string test', async () => {
     await redisClient.set('strkey', 'value');
     const value = await redisClient.get('strkey');
@@ -33,18 +34,8 @@ describe('redis string test', () => {
     });
     redisClient.set('testkey', 'onvalue');
   });
-});
 
-describe('redis object test', () => {
-  beforeAll(() => {
-    // need local redis server for test
-    redisClient = new RedisClient();
-  });
-
-  afterAll((done) => {
-    done();
-  });
-
+  // object
   it('set/get object test', async () => {
     const testObj = { key1: 'value1', key2: 'value2' };
     await redisClient.set('objkey', testObj);
