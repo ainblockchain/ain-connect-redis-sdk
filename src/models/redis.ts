@@ -39,6 +39,12 @@ export default class RedisClient {
     });
   }
 
+  public unref() {
+    this.client.unref();
+    this.onSub.unref();
+    this.onceSub.unref();
+  }
+
   public getClient() {
     return this.client;
   }

@@ -9,6 +9,7 @@ describe('redis test', () => {
   });
 
   afterAll((done) => {
+    redisClient.unref();
     done();
   });
 
