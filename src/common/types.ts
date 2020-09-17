@@ -5,7 +5,9 @@ export interface RedisCallback {
 export type EnvType = 'prod' | 'staging';
 
 export type ListenMethodList = 'deploy' | 'redeploy' | 'undeploy'
- | 'createStorage' | 'deleteStorage' | 'getContainerInfo' | 'getClusterInfo' | 'getClusterList';
+ | 'createNamespace' | 'deleteNamespace'
+ | 'createStorage' | 'deleteStorage'
+ | 'getContainerInfo' | 'getClusterInfo';
 
 export type workerListenMethod = {
   [type in ListenMethodList]: Function;
