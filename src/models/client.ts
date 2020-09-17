@@ -52,6 +52,16 @@ export default class Client {
     return res;
   }
 
+  public async createNamespace(params: Types.CreateNamespaceParams) {
+    const res = await this.sendRequest('createNamespace', params);
+    return res;
+  }
+
+  public async deleteNamespace(params: Types.DeleteNamespaceParams) {
+    const res = await this.sendRequest('deleteNamespace', params);
+    return res;
+  }
+
   public async createStorage(params: Types.CreateStorageParams) {
     const res = await this.sendRequest('createStorage', params);
     return res;
