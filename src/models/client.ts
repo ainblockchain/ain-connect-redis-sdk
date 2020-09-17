@@ -1,6 +1,6 @@
 import { customAlphabet } from 'nanoid';
 import { ClientOpts } from 'redis';
-import * as types from '../common/types';
+import * as Types from '../common/types';
 import RedisClient from './redis';
 import * as Error from '../common/error';
 
@@ -37,33 +37,33 @@ export default class Client {
     };
   }
 
-  public async deploy(params: types.DeployParams) {
+  public async deploy(params: Types.DeployParams) {
     const res = await this.sendRequest('deploy', params);
     return res;
   }
 
-  public async redeploy(params: types.RedeployParams) {
+  public async redeploy(params: Types.RedeployParams) {
     const res = await this.sendRequest('redeploy', params);
     return res;
   }
 
-  public async createStorage(params: types.CreateStorageParams) {
+  public async undeploy(params: Types.UndeployParams) {
+    const res = await this.sendRequest('undeploy', params);
+    return res;
+  }
+
+  public async createStorage(params: Types.CreateStorageParams) {
     const res = await this.sendRequest('createStorage', params);
     return res;
   }
 
-  public async deleteStorage(params: types.DeleteStorageParams) {
+  public async deleteStorage(params: Types.DeleteStorageParams) {
     const res = await this.sendRequest('deleteStorage', params);
     return res;
   }
 
-  public async getContainerInfo(params: types.GetContainerInfoParams) {
+  public async getContainerInfo(params: Types.GetContainerInfoParams) {
     const res = await this.sendRequest('getContainerConfig', params);
-    return res;
-  }
-
-  public async execKubeCtl(params: any) {
-    const res = await this.sendRequest('execKubeCtl', params);
     return res;
   }
 }
