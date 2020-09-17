@@ -4,7 +4,7 @@ export const enum STATUS_CODE {
   unexpected = '500',
 }
 
-export class CustomError extends Error {
+export class ConnectError extends Error {
   static MESSAGE = {
     0: 'success',
     1: 'It is invalid Parameter',
@@ -16,10 +16,10 @@ export class CustomError extends Error {
   constructor(private statusCode: string) {
     super();
     this.name = 'CustomError';
-    if (!CustomError.MESSAGE[statusCode]) {
+    if (!ConnectError.MESSAGE[statusCode]) {
       this.statusCode = '500';
     }
-    this.errorMessage = CustomError.MESSAGE[this.statusCode];
+    this.errorMessage = ConnectError.MESSAGE[this.statusCode];
   }
 
   showAlert() {

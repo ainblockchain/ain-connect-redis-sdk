@@ -1,20 +1,21 @@
 {
-  "name": "ain-connect-sdk",
+  "name": "ain-connect-redis-sdk",
   "version": "1.0.0",
-  "description": "SDK for AIN Connect functionality",
+  "description": "AIN Connect SDK for Redis",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ainblockchain/ain-connect-sdk.git"
+    "url": "git+https://github.com/ainblockchain/ain-connect-redis-sdk.git"
   },
   "author": "AIN Dev Team",
   "bugs": {
-    "url": "https://github.com/ainblockchain/ain-connect-sdk/issues"
+    "url": "https://github.com/ainblockchain/ain-connect-redis-sdk/issues"
   },
-  "homepage": "https://github.com/ainblockchain/ain-connect-sdk#readme",
+  "homepage": "https://github.com/ainblockchain/ain-connect-redis-sdk#readme",
   "keywords": [
     "ainetwork",
     "ain",
-    "ainconnect"
+    "ainconnect",
+    "redis"
   ],
   "scripts": {
     "test": "jest",
@@ -39,6 +40,7 @@
     "eslint-plugin-import": "^2.20.1",
     "husky": "^4.2.5",
     "jest": "^24.8.0",
+    "redis-server": "^1.2.2",
     "ts-jest": "^24.0.2",
     "typescript": "^3.9.7"
   },
