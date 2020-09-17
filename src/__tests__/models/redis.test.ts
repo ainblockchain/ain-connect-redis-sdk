@@ -2,7 +2,7 @@ import RedisClient from '../../models/redis';
 
 let redisClient: RedisClient;
 
-describe('redis', () => {
+describe('redis string test', () => {
   beforeAll(() => {
     // need local redis server for test
     redisClient = new RedisClient();
@@ -18,14 +18,7 @@ describe('redis', () => {
     expect(value).toEqual('value');
   });
 
-  it('set/get object test', async () => {
-    const testObj = { key1: 'value1', key2: 'value2' };
-    await redisClient.set('objkey', testObj);
-    const value = await redisClient.get('objkey');
-    expect(value).toEqual(testObj);
-  });
-
-  it('once test', async (done) => {
+  it('once string test', (done) => {
     redisClient.once('oncekey').then((value) => {
       expect(value).toEqual('oncevalue');
       done();
@@ -33,12 +26,47 @@ describe('redis', () => {
     redisClient.set('oncekey', 'oncevalue');
   });
 
-  it('once test', async (done) => {
-    redisClient.on('onkey', (err, key, value) => {
+  it('on string test', (done) => {
+    redisClient.on('testkey', (err, key, value) => {
       expect(value).toEqual('onvalue');
-      redisClient.off('onkey');
       done();
     });
-    redisClient.set('onkey', 'onvalue');
+    redisClient.set('testkey', 'onvalue');
+  });
+});
+
+describe('redis object test', () => {
+  beforeAll(() => {
+    // need local redis server for test
+    redisClient = new RedisClient();
+  });
+
+  afterAll((done) => {
+    done();
+  });
+
+  it('set/get object test', async () => {
+    const testObj = { key1: 'value1', key2: 'value2' };
+    await redisClient.set('objkey', testObj);
+    const value = await redisClient.get('objkey');
+    expect(value).toEqual(testObj);
+  });
+
+  it('once object test', (done) => {
+    const testObj = { key1: 'value1', key2: 'value2' };
+    redisClient.once('onceobjkey').then((value) => {
+      expect(value).toEqual(testObj);
+      done();
+    });
+    redisClient.set('onceobjkey', testObj);
+  });
+
+  it('on object test', async (done) => {
+    const testObj = { key1: 'value1', key2: 'value2' };
+    redisClient.on('onobjkey', (err, key, value) => {
+      expect(value).toEqual(testObj);
+      done();
+    });
+    redisClient.set('onobjkey', testObj);
   });
 });

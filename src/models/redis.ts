@@ -22,8 +22,8 @@ export default class RedisClient {
     this.subscriber.on('pmessage', (_pattern, channel, message) => {
       // _pattern : __keyspace@0__:${pattern}
       // channel : pattern matched value
-      // message : type of event (ex. set, hmset)
-      if (message === 'set' || message === 'hmset') {
+      // message : type of event (ex. set, hset)
+      if (message === 'set' || message === 'hset') {
         const key = channel.slice(15);
         this.get(key).then((value) => {
           callback(null, key, value);
@@ -42,7 +42,7 @@ export default class RedisClient {
     return new Promise((resolve, reject) => {
       this.subscriber.psubscribe(`__keyspace@0__:${pattern}`);
       this.subscriber.on('pmessage', (_pattern, channel, message) => {
-        if (message === 'set' || message === 'hmset') {
+        if (message === 'set' || message === 'hset') {
           this.subscriber.unsubscribe(`__keyspace@0__:${pattern}`);
           const key = channel.slice(15);
           this.get(key).then((value) => {
