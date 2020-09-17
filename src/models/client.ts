@@ -62,8 +62,13 @@ export default class Client {
     return res;
   }
 
+  public async getClusterInfo(params: Types.GetClusterInfoParams) {
+    const res = await this.sendRequest('getClusterInfo', params);
+    return res;
+  }
+
   public async getContainerInfo(params: Types.GetContainerInfoParams) {
-    const res = await this.sendRequest('getContainerConfig', params);
+    const res = await this.sendRequest('getContainerInfo', params);
     return res;
   }
 }
