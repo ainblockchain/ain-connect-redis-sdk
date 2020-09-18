@@ -40,7 +40,6 @@
     "eslint-plugin-import": "^2.20.1",
     "husky": "^4.2.5",
     "jest": "^24.8.0",
-    "redis-server": "^1.2.2",
     "ts-jest": "^24.0.2",
     "typescript": "^3.9.7"
   },
