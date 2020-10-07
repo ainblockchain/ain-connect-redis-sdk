@@ -32,7 +32,6 @@
   ],
   "devDependencies": {
     "@types/jest": "^26.0.7",
-    "@types/redis": "^2.8.27",
     "@typescript-eslint/eslint-plugin": "^2.22.0",
     "@typescript-eslint/parser": "^2.22.0",
     "eslint": "^6.8.0",
@@ -50,6 +49,7 @@
   },
   "dependencies": {
     "nanoid": "^3.1.12",
-    "redis": "^3.0.2"
+    "redis": "^3.0.2",
+    "@types/redis": "^2.8.27"
   }
 }
