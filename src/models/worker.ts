@@ -63,7 +63,7 @@ export default class Worker {
       } else {
         await this.writePayload({
           statusCode: Error.STATUS_CODE.invalidParams,
-          errMessage: err,
+          errMessage: 'invalid type',
         }, resPath);
       }
     });
