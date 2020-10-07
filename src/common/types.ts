@@ -15,8 +15,8 @@ export type workerListenMethod = {
 
 export type ClusterRegisterParams = {
   clusterName: string;
-  clusterTitle: string;
-  clusterDescription: string;
+  clusterTitle?: string;
+  clusterDescription?: string;
   type: string;
   endpointConfig?: {
     https: 0 | 1;
