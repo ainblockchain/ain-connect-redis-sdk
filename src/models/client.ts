@@ -74,12 +74,14 @@ export default class Client {
   }
 
   public async getClusterInfo(params: Types.GetClusterInfoParams) {
-    const res = await this.sendRequest('getClusterInfo', params);
+    const infoPath = `worker:info:${params.clusterName}`;
+    const res = await this.redisClient.get(infoPath);
     return res;
   }
 
   public async getContainerInfo(params: Types.GetContainerInfoParams) {
-    const res = await this.sendRequest('getContainerInfo', params);
+    const infoPath = `worker:container:${params.clusterName}:${params.containerId}`;
+    const res = await this.redisClient.get(infoPath);
     return res;
   }
 }
