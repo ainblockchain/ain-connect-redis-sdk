@@ -73,6 +73,16 @@ export default class Client {
     return res;
   }
 
+  public async getClusterList() {
+    const keys = await this.redisClient.keys('worker:info:*');
+    const res: any[] = [];
+    keys.forEach(async (key) => {
+      const value = await this.redisClient.get(key);
+      res.push({ name: value.clusterName, type: value.type });
+    });
+    return res;
+  }
+
   public async getClusterInfo(params: Types.GetClusterInfoParams) {
     const infoPath = `worker:info:${params.clusterName}`;
     const res = await this.redisClient.get(infoPath);

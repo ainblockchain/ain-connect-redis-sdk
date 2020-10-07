@@ -14,20 +14,17 @@ export type workerListenMethod = {
 };
 
 export type ClusterRegisterParams = {
-  address: string;
   clusterName: string;
   clusterTitle: string;
   clusterDescription: string;
-  isSingleNode: 0 | 1;
-  isPrivate: 0 | 1;
-  allowAddressList?: string[]
-  endpointConfig: {
+  type: string;
+  endpointConfig?: {
     https: 0 | 1;
     domainName?: string
     ip?: string
     istio: 0 | 1;
   }
-  nodePool: {
+  nodePool?: {
     nodePoolName: string
     hwConfig: {
       gpu: 0 | 1;
