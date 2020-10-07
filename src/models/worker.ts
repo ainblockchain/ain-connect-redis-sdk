@@ -46,7 +46,8 @@ export default class Worker {
     const pattern = `worker:request_queue:${clusterName}:*`;
     this.listenMethodList = methods;
     this.redisClient.on(pattern, async (err, key, value) => {
-      const resPath = `${key}:response`;
+      const requestId = key?.split(':')[3];
+      const resPath = `worker:response:${clusterName}:${requestId}`;
       const { type, payload } = value;
       if (err) {
         await this.writePayload({

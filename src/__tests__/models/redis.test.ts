@@ -39,7 +39,7 @@ describe('redis test', () => {
 
   // object
   it('set/get object test', async () => {
-    const testObj = { key1: 'value1', key2: 'value2' };
+    const testObj = { key1: 'value1', key2: JSON.stringify({ aaa: 1, ccc: 'ddd' }) };
     await redisClient.set('objkey', testObj);
     const value = await redisClient.get('objkey');
     expect(value).toEqual(testObj);
