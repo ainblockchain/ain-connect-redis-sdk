@@ -18,11 +18,19 @@ describe('client', () => {
 
   afterAll((done) => {
     redisClient.unref();
+    client.unref();
     done();
   });
 
   it('get cluster list', async () => {
     const list = await client.getClusterList();
     expect(list.length).toEqual(4);
+  });
+
+  it('get cluster info', async () => {
+    const info = await client.getClusterInfo({
+      clusterName: 'cluster-1',
+    });
+    expect(info.clusterName + info.type).toEqual('cluster-1aws');
   });
 });

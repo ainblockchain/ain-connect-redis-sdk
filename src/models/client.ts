@@ -38,6 +38,10 @@ export default class Client {
     };
   }
 
+  public unref() {
+    this.redisClient.unref();
+  }
+
   public async deploy(params: Types.DeployParams) {
     const res = await this.sendRequest('deploy', params);
     return res;
