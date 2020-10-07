@@ -43,7 +43,6 @@ export type ClusterRegisterParams = {
 }
 
 export type DeployParams = {
-  targetAddress?: string;
   clusterName?: string;
   namespaceId: string;
   deployTemplateName?: string
@@ -83,7 +82,6 @@ export type DeployParams = {
 
 export type DeployReturn = {
   statusCode: number
-  targetAddress: string
   clusterName: string
   containerId: string
   endpoint: string
@@ -91,7 +89,6 @@ export type DeployReturn = {
 }
 
 export type RedeployParams = {
-  targetAddress: string;
   clusterName: string;
   namespaceId: string;
   containerId: string;
@@ -103,25 +100,21 @@ export type RedeployParams = {
 }
 
 export type UndeployParams = {
-  targetAddress: string;
   clusterName: string;
   namespaceId: string;
   containerId: string;
 }
 
 export type CreateNamespaceParams = {
-  targetAddress: string;
   clusterName: string;
 }
 
 export type DeleteNamespaceParams = {
-  targetAddress: string;
   clusterName: string;
   namespaceId: string;
 }
 
 export type CreateStorageParams = {
-  targetAddress: string;
   clusterName: string;
   namespaceId: string;
   storagePerGb: number;
@@ -133,14 +126,12 @@ export type CreateStorageReturn = {
 }
 
 export type DeleteStorageParams = {
-  targetAddress: string;
   clusterName: string;
   namespaceId: string;
   storageId: string;
 }
 
 export type GetContainerInfoParams = {
-  targetAddress: string;
   clusterName: string;
   containerId: string;
 }
@@ -155,7 +146,6 @@ export type GetContainerInfoReturn = {
 }
 
 export type GetClusterInfoParams = {
-  targetAddress: string;
   clusterName: string;
 }
 
