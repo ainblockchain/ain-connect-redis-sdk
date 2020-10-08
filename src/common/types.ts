@@ -130,6 +130,7 @@ export type DeleteStorageParams = {
 
 export type GetContainerInfoParams = {
   clusterName: string;
+  namespaceId: string;
   containerId: string;
 }
 
