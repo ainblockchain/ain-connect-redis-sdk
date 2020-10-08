@@ -7,7 +7,7 @@ export type EnvType = 'prod' | 'staging';
 export type ListenMethodList = 'deploy' | 'redeploy' | 'undeploy'
  | 'createNamespace' | 'deleteNamespace'
  | 'createStorage' | 'deleteStorage'
- | 'getContainerInfo' | 'getClusterInfo';
+ | 'getContainerInfo';
 
 export type workerListenMethod = {
   [type in ListenMethodList]: Function;
