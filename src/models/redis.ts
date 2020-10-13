@@ -1,4 +1,5 @@
 import Redis from 'redis';
+import { promisify } from 'util';
 import { RedisCallback } from '../common/types';
 
 interface CallbackTable {
@@ -78,16 +79,17 @@ export default class RedisClient {
     });
   }
 
-  public keys(pattern: string): Promise<string[]> {
-    return new Promise((resolve, reject) => {
-      this.client.keys(pattern, (err, keys) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(keys);
-        }
-      });
-    });
+  public async keys(pattern: string) {
+    const scan = promisify(this.client.scan).bind(this.client);
+    const keys = [];
+    let cursor = '0';
+    do {
+      const res = await scan(cursor, 'MATCH', pattern);
+      const [nextCursor, curKeys] = res;
+      cursor = nextCursor;
+      keys.push(...curKeys);
+    } while (cursor !== '0');
+    return keys;
   }
 
   public get(key: string): Promise<any> {
