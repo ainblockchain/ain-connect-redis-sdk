@@ -81,4 +81,15 @@ export default class Worker {
       allowAdress,
     }, `worker:info:${clusterName}`);
   }
+
+  public async addPodInfo(clusterName: string, containerId: string,
+    podId: string, podInfo: Types.PodInfo) {
+    const key = `container:${clusterName}:${containerId}:${podId}`;
+    await this.writePayload(podInfo, key);
+  }
+
+  public async deletePodInfo(clusterName: string, containerId: string, podId: string) {
+    const key = `container:${clusterName}:${containerId}:${podId}`;
+    await this.redisClient.del(key);
+  }
 }

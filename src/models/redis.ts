@@ -139,4 +139,30 @@ export default class RedisClient {
       }
     });
   }
+
+  public del(key: string) {
+    return new Promise((resolve, reject) => {
+      this.client.type(key, (err, type) => {
+        if (err) {
+          reject(err);
+        } else if (type === 'hash') {
+          this.client.hdel(key, (error, value) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(value);
+            }
+          });
+        } else { // type === 'string'
+          this.client.del(key, (error, value) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(value);
+            }
+          });
+        }
+      });
+    });
+  }
 }

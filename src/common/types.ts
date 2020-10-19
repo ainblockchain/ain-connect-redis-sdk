@@ -17,6 +17,22 @@ export type workerListenMethod = {
   [type in ListenMethodList]: Function;
 };
 
+export type PodInfo = {
+  podName: string;
+  namespaceId: string;
+  status: {
+    phase: PhaseList;
+    message?: string;
+    startTime?:string;
+    condition: {
+      type: ConditionType;
+      status: boolean;
+      reason?: string;
+      message?: string;
+    }
+  }
+}
+
 export type ClusterRegisterParams = {
   clusterName: string;
   clusterTitle?: string;
@@ -145,22 +161,6 @@ export type GetClusterInfoReturn = ClusterRegisterParams;
 export type GetContainerInfoParams = {
   clusterName: string;
   containerId: string;
-}
-
-export type PodInfo = {
-  podName: string;
-  namespaceId: string;
-  status: {
-    phase: PhaseList;
-    message?: string;
-    startTime?:string;
-    condition: {
-      type: ConditionType;
-      status: boolean;
-      reason?: string;
-      message?: string;
-    }
-  }
 }
 
 export type GetContainerInfoReturn = {
