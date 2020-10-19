@@ -4,6 +4,10 @@ export interface RedisCallback {
 
 export type EnvType = 'prod' | 'staging';
 
+export type PhaseList = 'Pending' | 'Running' | 'Succeeded' | 'Failed' | 'Unknown';
+
+export type ConditionType = 'Initialized' | 'Ready' | 'ContainersReady' | 'PodScheduled';
+
 export type ListenMethodList = 'deploy' | 'redeploy' | 'undeploy'
  | 'createNamespace' | 'deleteNamespace'
  | 'createStorage' | 'deleteStorage'
@@ -23,20 +27,17 @@ export type ClusterRegisterParams = {
     domainName?: string
     ip?: string
     istio: 0 | 1;
-  }
+  };
   nodePool?: {
-    nodePoolName: string
-    hwConfig: {
-      gpu: 0 | 1;
-      storage: 0 | 1;
+    [nodePoolName: string]: {
+      osImage: string,
+      capacity: {
+        cpu: string,
+        memory: string
+        gpu: string,
+      },
     }
-    priceConfig: {
-      cpuPerCore: number;
-      memoryPerGb: number;
-      gpu: number;
-      storagePerGb: number;
-    }
-  }
+  };
 }
 
 export type DeployParams = {
@@ -56,7 +57,7 @@ export type DeployParams = {
   containerInfo: {
     imageName: string;
     nodePoolName?: string;
-    storageId?: string;
+    storageSpec?: {storageId: string, mountPath: string}[];
     imageRegistryLoginInfo?: {
       url: string;
       id: string;
@@ -71,18 +72,18 @@ export type DeployParams = {
     replicas?: number;
     command?: string;
     env?: object;
-    port: object;
+    port: number[];
   }
   requestTimeout?: number;
   runningTimeout?: number;
 }
 
 export type DeployReturn = {
-  statusCode: number
-  clusterName: string
-  containerId: string
-  endpoint: string
-  storageId?: string
+  statusCode: number;
+  clusterName: string;
+  containerId: string;
+  endpoint: {[post: string]: string};
+  storageId?: string;
 }
 
 export type RedeployParams = {
@@ -90,7 +91,7 @@ export type RedeployParams = {
   namespaceId: string;
   containerId: string;
   option?: {
-    port?: object;
+    port?: number[];
     replicas?: number;
     env?: object;
   }
@@ -115,6 +116,7 @@ export type CreateStorageParams = {
   clusterName: string;
   namespaceId: string;
   storagePerGb: number;
+  subpath?: string;
 }
 
 export type CreateStorageReturn = {
@@ -128,9 +130,31 @@ export type DeleteStorageParams = {
   storageId: string;
 }
 
+export type GetClusterInfoParams = {
+  clusterName: string;
+}
+
+export type GetClusterInfoReturn = ClusterRegisterParams;
+
 export type GetContainerInfoParams = {
   clusterName: string;
   containerId: string;
+}
+
+export type PodInfo = {
+  podName: string;
+  namespaceId: string;
+  status: {
+    phase: PhaseList;
+    message?: string;
+    startTime?:string;
+    condition: {
+      type: ConditionType;
+      status: boolean;
+      reason?: string;
+      message?: string;
+    }
+  }
 }
 
 export type GetContainerInfoReturn = {
@@ -142,11 +166,11 @@ export type GetContainerInfoReturn = {
   resourceStatus: number;
 }
 
-export type GetClusterInfoParams = {
+export type GetStorageInfoParams = {
   clusterName: string;
+  storageId: string;
 }
 
-export type GetClusterInfoReturn = {
-  statusCode: number;
-  clusterInfo: ClusterRegisterParams;
+export type GetStorageInfoReturn = {
+  phase: string;
 }
