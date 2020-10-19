@@ -28,7 +28,7 @@ export type ClusterRegisterParams = {
     ip?: string
     istio: 0 | 1;
   };
-  nodePool?: {
+  nodePool: {
     [nodePoolName: string]: {
       osImage: string,
       capacity: {
@@ -58,11 +58,6 @@ export type DeployParams = {
     imageName: string;
     nodePoolName?: string;
     storageSpec?: {storageId: string, mountPath: string}[];
-    imageRegistryLoginInfo?: {
-      url: string;
-      id: string;
-      pw: string;
-    };
     hwSpec: {
       cpuPerCore: number;
       memoryPerGb: number;
@@ -82,7 +77,9 @@ export type DeployReturn = {
   statusCode: number;
   clusterName: string;
   containerId: string;
-  endpoint: {[post: string]: string};
+  endpoint: {
+    [post: string]: string
+  };
   storageId?: string;
 }
 
@@ -158,12 +155,7 @@ export type PodInfo = {
 }
 
 export type GetContainerInfoReturn = {
-  statusCode: number
-  containerImage: string
-  port: object;
-  env?: object;
-  command?: string;
-  resourceStatus: number;
+  [podId: string]: PodInfo
 }
 
 export type GetStorageInfoParams = {

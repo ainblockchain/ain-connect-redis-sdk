@@ -96,8 +96,14 @@ export default class Client {
 
   public async getContainerInfo(params: Types.GetContainerInfoParams)
     : Promise<Types.GetContainerInfoReturn> {
-    const infoPath = `container:${params.clusterName}:${params.containerId}`;
-    const res = await this.redisClient.get(infoPath);
+    const pattern = `container:${params.clusterName}:${params.containerId}:*`;
+    const keys = await this.redisClient.keys(pattern);
+    const res = {};
+    for (const key of keys) {
+      const value = await this.redisClient.get(key);
+      const podId = key.split(':')[3];
+      res[podId] = value;
+    }
     return res;
   }
 
