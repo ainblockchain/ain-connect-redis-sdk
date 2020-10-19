@@ -100,6 +100,9 @@ export default class Client {
     : Promise<Types.GetClusterInfoReturn> {
     const infoPath = `worker:info:${params.clusterName}`;
     const res = await this.redisClient.get(infoPath);
+    /* parse stringified property in registerCluster() */
+    res.endpointConfig = JSON.parse(res.endpointConfig);
+    res.nodePool = JSON.parse(res.nodePool);
     return res;
   }
 
@@ -111,6 +114,8 @@ export default class Client {
     for (const key of keys) {
       const value = await this.redisClient.get(key);
       const podId = key.split(':')[3];
+      /* parse stringified property in addPodInfo() */
+      value.status = JSON.parse(value.status);
       res[podId] = value;
     }
     return res;

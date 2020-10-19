@@ -72,7 +72,9 @@ export default class Worker {
   }
 
   public async registerCluster(option: Types.ClusterRegisterParams) {
-    // TODO: need stringify for endpointConfig, nodePool?
+    const newOption: any = option;
+    newOption.endpointConfig = JSON.stringify(option.endpointConfig);
+    newOption.nodePool = JSON.stringify(option.nodePool);
     await this.writePayload(option, `worker:info:${option.clusterName}`);
   }
 
@@ -85,6 +87,8 @@ export default class Worker {
   public async addPodInfo(clusterName: string, containerId: string,
     podId: string, podInfo: Types.PodInfo) {
     const key = `container:${clusterName}:${containerId}:${podId}`;
+    const newPodInfo: any = podInfo;
+    newPodInfo.status = JSON.stringify(podInfo.status);
     await this.writePayload(podInfo, key);
   }
 
