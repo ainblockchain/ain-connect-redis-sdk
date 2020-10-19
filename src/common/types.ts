@@ -105,8 +105,13 @@ export type DeployParams = {
   runningTimeout?: number;
 }
 
-export type DeployReturn = {
+export type RequestReturn<T> = {
   statusCode: number;
+  result?: T;
+  errMessage?: string;
+}
+
+export type DeployReturn = {
   clusterName: string;
   containerId: string;
   endpoint: {
@@ -137,6 +142,10 @@ export type CreateNamespaceParams = {
   clusterName: string;
 }
 
+export type CreateNamespaceReturn = {
+  namespaceId: string;
+}
+
 export type DeleteNamespaceParams = {
   clusterName: string;
   namespaceId: string;
@@ -151,7 +160,6 @@ export type CreateStorageParams = {
 }
 
 export type CreateStorageReturn = {
-  statusCode: number;
   storageId: string;
 }
 

@@ -16,7 +16,8 @@ export default class Client {
     this.redisClient = new RedisClient(options);
   }
 
-  private async sendRequest(type: string, params: any) {
+  private async sendRequest(type: string, params: any)
+    : Promise<Types.RequestReturn<any>> {
     const requestId = getRandomRequestId();
     const { clusterName } = params;
     const key = `worker:request_queue:${clusterName}:${requestId}`;
@@ -43,45 +44,53 @@ export default class Client {
   }
 
   /* Deployment */
-  public async deploy(params: Types.DeployParams) {
+  public async deploy(params: Types.DeployParams)
+    : Promise<Types.RequestReturn<Types.DeployReturn>> {
     const res = await this.sendRequest('deploy', params);
     return res;
   }
 
-  public async redeploy(params: Types.RedeployParams) {
+  public async redeploy(params: Types.RedeployParams)
+    : Promise<Types.RequestReturn<null>> {
     const res = await this.sendRequest('redeploy', params);
     return res;
   }
 
-  public async undeploy(params: Types.UndeployParams) {
+  public async undeploy(params: Types.UndeployParams)
+    : Promise<Types.RequestReturn<null>> {
     const res = await this.sendRequest('undeploy', params);
     return res;
   }
 
   /* Namespace */
-  public async createNamespace(params: Types.CreateNamespaceParams) {
+  public async createNamespace(params: Types.CreateNamespaceParams)
+    : Promise<Types.RequestReturn<Types.CreateNamespaceReturn>> {
     const res = await this.sendRequest('createNamespace', params);
     return res;
   }
 
-  public async deleteNamespace(params: Types.DeleteNamespaceParams) {
+  public async deleteNamespace(params: Types.DeleteNamespaceParams)
+    : Promise<Types.RequestReturn<null>> {
     const res = await this.sendRequest('deleteNamespace', params);
     return res;
   }
 
   /* Storage */
-  public async createStorage(params: Types.CreateStorageParams) {
+  public async createStorage(params: Types.CreateStorageParams)
+    : Promise<Types.RequestReturn<Types.CreateStorageReturn>> {
     const res = await this.sendRequest('createStorage', params);
     return res;
   }
 
-  public async deleteStorage(params: Types.DeleteStorageParams) {
+  public async deleteStorage(params: Types.DeleteStorageParams)
+    : Promise<Types.RequestReturn<null>> {
     const res = await this.sendRequest('deleteStorage', params);
     return res;
   }
 
   /* Secret */
-  public async createSecret(params: Types.CreateSecretParams) {
+  public async createSecret(params: Types.CreateSecretParams)
+    : Promise<Types.RequestReturn<null>> {
     const res = await this.sendRequest('createSecret', params);
     return res;
   }
