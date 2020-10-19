@@ -73,7 +73,12 @@ export type DeployParams = {
   containerInfo: {
     imageName: string;
     nodePoolName?: string;
-    storageSpec?: {storageId: string, mountPath: string}[];
+    storageSpec?: {
+      name: string;
+      mountPath: string;
+      subPath?: string;
+      isSecret?: boolean;
+    }
     hwSpec: {
       cpuPerCore: number;
       memoryPerGb: number;
@@ -129,7 +134,7 @@ export type CreateStorageParams = {
   clusterName: string;
   namespaceId: string;
   storagePerGb: number;
-  subpath?: string;
+  subPath?: string;
 }
 
 export type CreateStorageReturn = {
