@@ -16,7 +16,8 @@ export default class Client {
     this.redisClient = new RedisClient(options);
   }
 
-  private async sendRequest(type: string, params: any) {
+  private async sendRequest(type: string, params: any)
+    : Promise<Types.RequestReturn<any>> {
     const requestId = getRandomRequestId();
     const { clusterName } = params;
     const key = `worker:request_queue:${clusterName}:${requestId}`;
@@ -42,38 +43,55 @@ export default class Client {
     this.redisClient.unref();
   }
 
-  public async deploy(params: Types.DeployParams) {
+  /* Deployment */
+  public async deploy(params: Types.DeployParams)
+    : Promise<Types.RequestReturn<Types.DeployReturn>> {
     const res = await this.sendRequest('deploy', params);
     return res;
   }
 
-  public async redeploy(params: Types.RedeployParams) {
+  public async redeploy(params: Types.RedeployParams)
+    : Promise<Types.RequestReturn<null>> {
     const res = await this.sendRequest('redeploy', params);
     return res;
   }
 
-  public async undeploy(params: Types.UndeployParams) {
+  public async undeploy(params: Types.UndeployParams)
+    : Promise<Types.RequestReturn<null>> {
     const res = await this.sendRequest('undeploy', params);
     return res;
   }
 
-  public async createNamespace(params: Types.CreateNamespaceParams) {
+  /* Namespace */
+  public async createNamespace(params: Types.CreateNamespaceParams)
+    : Promise<Types.RequestReturn<Types.CreateNamespaceReturn>> {
     const res = await this.sendRequest('createNamespace', params);
     return res;
   }
 
-  public async deleteNamespace(params: Types.DeleteNamespaceParams) {
+  public async deleteNamespace(params: Types.DeleteNamespaceParams)
+    : Promise<Types.RequestReturn<null>> {
     const res = await this.sendRequest('deleteNamespace', params);
     return res;
   }
 
-  public async createStorage(params: Types.CreateStorageParams) {
+  /* Storage */
+  public async createStorage(params: Types.CreateStorageParams)
+    : Promise<Types.RequestReturn<Types.CreateStorageReturn>> {
     const res = await this.sendRequest('createStorage', params);
     return res;
   }
 
-  public async deleteStorage(params: Types.DeleteStorageParams) {
+  public async deleteStorage(params: Types.DeleteStorageParams)
+    : Promise<Types.RequestReturn<null>> {
     const res = await this.sendRequest('deleteStorage', params);
+    return res;
+  }
+
+  /* Secret */
+  public async createSecret(params: Types.CreateSecretParams)
+    : Promise<Types.RequestReturn<null>> {
+    const res = await this.sendRequest('createSecret', params);
     return res;
   }
 
@@ -87,14 +105,37 @@ export default class Client {
     return res;
   }
 
-  public async getClusterInfo(params: Types.GetClusterInfoParams) {
+  public async getClusterInfo(params: Types.GetClusterInfoParams)
+    : Promise<Types.ClusterStatusParams> {
     const infoPath = `worker:info:${params.clusterName}`;
     const res = await this.redisClient.get(infoPath);
+    /* parse stringified property in setClusterStatus() */
+    if (res.nodePool) {
+      res.nodePool = JSON.parse(res.nodePool);
+    }
     return res;
   }
 
-  public async getContainerInfo(params: Types.GetContainerInfoParams) {
-    const infoPath = `container:${params.clusterName}:${params.containerId}`;
+  public async getContainerInfo(params: Types.GetContainerInfoParams)
+    : Promise<Types.GetContainerInfoReturn> {
+    const pattern = `container:${params.clusterName}:${params.containerId}:*`;
+    const keys = await this.redisClient.keys(pattern);
+    const res = {};
+    for (const key of keys) {
+      const value = await this.redisClient.get(key);
+      const podId = key.split(':')[3];
+      /* parse stringified property in addPodInfo() */
+      if (value.status) {
+        value.status = JSON.parse(value.status);
+      }
+      res[podId] = value;
+    }
+    return res;
+  }
+
+  public async getStorageInfo(params: Types.GetStorageInfoParams)
+    : Promise<Types.GetStorageInfoReturn> {
+    const infoPath = `stroage:${params.clusterName}:${params.storageId}`;
     const res = await this.redisClient.get(infoPath);
     return res;
   }

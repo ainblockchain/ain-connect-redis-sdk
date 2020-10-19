@@ -42,7 +42,7 @@ export default class Worker {
     await this.redisClient.set(dbpath, payload);
   }
 
-  public listenReqeust(clusterName: string, methods: Types.workerListenMethod) {
+  public listenRequest(clusterName: string, methods: Types.workerListenMethod) {
     const pattern = `worker:request_queue:${clusterName}:*`;
     this.listenMethodList = methods;
     this.redisClient.on(pattern, async (err, key, value) => {
@@ -56,11 +56,18 @@ export default class Worker {
         }, resPath);
       } else if (type && this.listenMethodList[type]) {
         // parse stringified payload
-        const res = await this.listenMethodList[type](JSON.parse(payload));
-        await this.writePayload({
-          statusCode: Error.STATUS_CODE.success,
-          result: JSON.stringify(res),
-        }, resPath);
+        try {
+          const res = await this.listenMethodList[type](JSON.parse(payload));
+          await this.writePayload({
+            statusCode: Error.STATUS_CODE.success,
+            result: JSON.stringify(res),
+          }, resPath);
+        } catch (e) {
+          await this.writePayload({
+            statusCode: e.statusCode,
+            errMessage: e.errMessage,
+          }, resPath);
+        }
       } else {
         await this.writePayload({
           statusCode: Error.STATUS_CODE.invalidParams,
@@ -71,15 +78,35 @@ export default class Worker {
     return null;
   }
 
-  public async registerCluster(option: Types.ClusterRegisterParams) {
-    // TODO: need stringify for endpointConfig, nodePool?
+  public async setClusterStatus(option: Types.ClusterStatusParams) {
+    const newOption: any = option;
+    newOption.nodePool = JSON.stringify(option.nodePool);
     await this.writePayload(option, `worker:info:${option.clusterName}`);
   }
 
-  public async updateClusterInfo(clusterName: string, allowAdress?: string[], price?: number) {
-    await this.writePayload({
-      allowAdress,
-      price,
-    }, `worker:info:${clusterName}`);
+  public async deleteClusterStatus(clusterName: string) {
+    await this.redisClient.del(`worker:info:${clusterName}`);
+  }
+
+  public async setPodStatus(option: Types.PodStatusParams) {
+    const key = `container:${option.clusterName}:${option.containerId}:${option.podId}`;
+    const newPodInfo: any = option.podInfo;
+    newPodInfo.status = JSON.stringify(option.podInfo.status);
+    await this.writePayload(newPodInfo, key);
+  }
+
+  public async deletePodStatus(clusterName: string, containerId: string, podId: string) {
+    const key = `container:${clusterName}:${containerId}:${podId}`;
+    await this.redisClient.del(key);
+  }
+
+  public async setStorageStatus(option: Types.StorageStatusParams) {
+    const key = `storage:${option.clusterName}:${option.storageId}`;
+    await this.writePayload(option.storageInfo, key);
+  }
+
+  public async deleteStorageStatus(clusterName: string, storageId: string) {
+    const key = `storage:${clusterName}:${storageId}`;
+    await this.redisClient.del(key);
   }
 }
