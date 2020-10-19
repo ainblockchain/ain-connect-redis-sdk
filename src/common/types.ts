@@ -110,6 +110,7 @@ export type RedeployParams = {
   containerId: string;
   option?: {
     port?: number[];
+    imageName?: string;
     replicas?: number;
     env?: object;
   }
