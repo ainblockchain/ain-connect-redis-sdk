@@ -4,7 +4,8 @@ export interface RedisCallback {
 
 export type EnvType = 'prod' | 'staging';
 
-export type PhaseList = 'Pending' | 'Running' | 'Succeeded' | 'Failed' | 'Unknown';
+export type PodStatus = 'Pending' | 'Running' | 'Succeeded' | 'Failed' | 'Unknown';
+export type StorageStatus = 'pending' | 'createStorage' | 'success' | 'failed' | 'on-migration';
 
 export type ConditionType = 'Initialized' | 'Ready' | 'ContainersReady' | 'PodScheduled';
 
@@ -21,7 +22,7 @@ export type PodInfoParams = {
   podName: string;
   namespaceId: string;
   status: {
-    phase: PhaseList;
+    phase: PodStatus;
     message?: string;
     startTime?:string;
     condition: {
@@ -65,6 +66,14 @@ export type PodStatusParams = {
   podInfo: PodInfoParams;
 }
 
+export type StorageStatusParams = {
+  clusterName: string;
+  storageId: string;
+  storageInfo: {
+    status: StorageStatus;
+  }
+}
+
 export type DeployParams = {
   clusterName?: string;
   namespaceId: string;
@@ -103,6 +112,7 @@ export type DeployParams = {
   runningTimeout?: number;
 }
 
+/* Types for Client */
 export type RequestReturn<T> = {
   statusCode: number;
   result?: T;
@@ -152,7 +162,7 @@ export type DeleteNamespaceParams = {
 export type CreateStorageParams = {
   clusterName: string;
   namespaceId: string;
-  storagePerGb: number;
+  capacity: string;
   subPath?: string;
   shared?: boolean;
 }
@@ -197,5 +207,5 @@ export type GetStorageInfoParams = {
 }
 
 export type GetStorageInfoReturn = {
-  phase: string;
+  status: StorageStatus;
 }

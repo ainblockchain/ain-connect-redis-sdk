@@ -88,16 +88,25 @@ export default class Worker {
     await this.redisClient.del(`worker:info:${clusterName}`);
   }
 
-  public async setPodStatus(clusterName: string, containerId: string,
-    podId: string, podInfo: Types.PodInfoParams) {
-    const key = `container:${clusterName}:${containerId}:${podId}`;
-    const newPodInfo: any = podInfo;
-    newPodInfo.status = JSON.stringify(podInfo.status);
-    await this.writePayload(podInfo, key);
+  public async setPodStatus(option: Types.PodStatusParams) {
+    const key = `container:${option.clusterName}:${option.containerId}:${option.podId}`;
+    const newPodInfo: any = option.podInfo;
+    newPodInfo.status = JSON.stringify(option.podInfo.status);
+    await this.writePayload(newPodInfo, key);
   }
 
   public async deletePodStatus(clusterName: string, containerId: string, podId: string) {
     const key = `container:${clusterName}:${containerId}:${podId}`;
+    await this.redisClient.del(key);
+  }
+
+  public async setStorageStatus(option: Types.StorageStatusParams) {
+    const key = `storage:${option.clusterName}:${option.storageId}`;
+    await this.writePayload(option.storageInfo, key);
+  }
+
+  public async deleteStorageStatus(clusterName: string, storageId: string) {
+    const key = `storage:${clusterName}:${storageId}`;
     await this.redisClient.del(key);
   }
 }
