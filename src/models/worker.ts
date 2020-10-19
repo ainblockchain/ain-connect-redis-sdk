@@ -80,7 +80,6 @@ export default class Worker {
 
   public async setClusterStatus(option: Types.ClusterStatusParams) {
     const newOption: any = option;
-    newOption.endpointConfig = JSON.stringify(option.endpointConfig);
     newOption.nodePool = JSON.stringify(option.nodePool);
     await this.writePayload(option, `worker:info:${option.clusterName}`);
   }

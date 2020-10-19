@@ -36,31 +36,29 @@ export type PodInfoParams = {
 export type ClusterStatusParams = {
   clusterName: string;
   type: string;
-  endpointConfig?: {
-    https: 0 | 1;
-    domainName?: string
-    ip?: string
-    istio: 0 | 1;
-  };
   nodePool: {
     [nodePoolName: string]: {
       gpuType: string,
       osImage: string,
-      capacity: {
-        cpu: string,
-        memory: string
-        gpu: string,
-      },
-      allocatable: {
-        cpu: string,
-        memory: string
-        gpu: string,
+      nodes: {
+        [nodeId: string]: {
+          capacity: {
+            cpu: string,
+            memory: string
+            gpu: string,
+          },
+          allocatable: {
+            cpu: string,
+            memory: string
+            gpu: string,
+          }
+        }
       }
     }
   };
 }
 
-export type PodStatusParmas = {
+export type PodStatusParams = {
   clusterName: string;
   containerId: string;
   podId: string;
