@@ -88,7 +88,7 @@ export default class Client {
   }
 
   public async getClusterInfo(params: Types.GetClusterInfoParams)
-    : Promise<Types.GetClusterInfoParams> {
+    : Promise<Types.GetClusterInfoReturn> {
     const infoPath = `worker:info:${params.clusterName}`;
     const res = await this.redisClient.get(infoPath);
     return res;
