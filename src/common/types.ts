@@ -127,6 +127,15 @@ export type DeleteStorageParams = {
   storageId: string;
 }
 
+export type CreateSecretParams = {
+  namespaceId: string;
+  name: string;
+  type: string;
+  data: {
+    [key: string]: string
+  };
+}
+
 export type GetClusterInfoParams = {
   clusterName: string;
 }

@@ -42,6 +42,7 @@ export default class Client {
     this.redisClient.unref();
   }
 
+  /* Deployment */
   public async deploy(params: Types.DeployParams) {
     const res = await this.sendRequest('deploy', params);
     return res;
@@ -57,6 +58,7 @@ export default class Client {
     return res;
   }
 
+  /* Namespace */
   public async createNamespace(params: Types.CreateNamespaceParams) {
     const res = await this.sendRequest('createNamespace', params);
     return res;
@@ -67,6 +69,7 @@ export default class Client {
     return res;
   }
 
+  /* Storage */
   public async createStorage(params: Types.CreateStorageParams) {
     const res = await this.sendRequest('createStorage', params);
     return res;
@@ -74,6 +77,12 @@ export default class Client {
 
   public async deleteStorage(params: Types.DeleteStorageParams) {
     const res = await this.sendRequest('deleteStorage', params);
+    return res;
+  }
+
+  /* Secret */
+  public async createSecret(params: Types.CreateSecretParams) {
+    const res = await this.sendRequest('createSecret', params);
     return res;
   }
 
