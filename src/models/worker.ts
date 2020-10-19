@@ -56,11 +56,18 @@ export default class Worker {
         }, resPath);
       } else if (type && this.listenMethodList[type]) {
         // parse stringified payload
-        const res = await this.listenMethodList[type](JSON.parse(payload));
-        await this.writePayload({
-          statusCode: Error.STATUS_CODE.success,
-          result: JSON.stringify(res),
-        }, resPath);
+        try {
+          const res = await this.listenMethodList[type](JSON.parse(payload));
+          await this.writePayload({
+            statusCode: Error.STATUS_CODE.success,
+            result: JSON.stringify(res),
+          }, resPath);
+        } catch (e) {
+          await this.writePayload({
+            statusCode: e.statusCode,
+            errMessage: e.errMessage,
+          }, resPath);
+        }
       } else {
         await this.writePayload({
           statusCode: Error.STATUS_CODE.invalidParams,
