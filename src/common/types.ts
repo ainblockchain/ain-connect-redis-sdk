@@ -147,6 +147,7 @@ export type CreateStorageParams = {
   namespaceId: string;
   storagePerGb: number;
   subPath?: string;
+  shared?: boolean;
 }
 
 export type CreateStorageReturn = {
