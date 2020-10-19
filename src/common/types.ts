@@ -17,7 +17,7 @@ export type workerListenMethod = {
   [type in ListenMethodList]: Function;
 };
 
-export type PodInfo = {
+export type PodInfoParams = {
   podName: string;
   namespaceId: string;
   status: {
@@ -33,10 +33,8 @@ export type PodInfo = {
   }
 }
 
-export type ClusterRegisterParams = {
+export type ClusterStatusParams = {
   clusterName: string;
-  clusterTitle?: string;
-  clusterDescription?: string;
   type: string;
   endpointConfig?: {
     https: 0 | 1;
@@ -46,14 +44,27 @@ export type ClusterRegisterParams = {
   };
   nodePool: {
     [nodePoolName: string]: {
+      gpuType: string,
       osImage: string,
       capacity: {
         cpu: string,
         memory: string
         gpu: string,
       },
+      allocatable: {
+        cpu: string,
+        memory: string
+        gpu: string,
+      }
     }
   };
+}
+
+export type PodStatusParmas = {
+  clusterName: string;
+  containerId: string;
+  podId: string;
+  podInfo: PodInfoParams;
 }
 
 export type DeployParams = {
@@ -162,7 +173,7 @@ export type GetClusterInfoParams = {
   clusterName: string;
 }
 
-export type GetClusterInfoReturn = ClusterRegisterParams;
+export type GetClusterInfoReturn = ClusterStatusParams;
 
 export type GetContainerInfoParams = {
   clusterName: string;
@@ -170,7 +181,7 @@ export type GetContainerInfoParams = {
 }
 
 export type GetContainerInfoReturn = {
-  [podId: string]: PodInfo
+  [podId: string]: PodInfoParams;
 }
 
 export type GetStorageInfoParams = {

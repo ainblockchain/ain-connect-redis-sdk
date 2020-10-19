@@ -71,28 +71,26 @@ export default class Worker {
     return null;
   }
 
-  public async registerCluster(option: Types.ClusterRegisterParams) {
+  public async setClusterStatus(option: Types.ClusterStatusParams) {
     const newOption: any = option;
     newOption.endpointConfig = JSON.stringify(option.endpointConfig);
     newOption.nodePool = JSON.stringify(option.nodePool);
     await this.writePayload(option, `worker:info:${option.clusterName}`);
   }
 
-  public async updateClusterInfo(clusterName: string, allowAdress?: string[]) {
-    await this.writePayload({
-      allowAdress,
-    }, `worker:info:${clusterName}`);
+  public async deleteClusterStatus(clusterName: string) {
+    await this.redisClient.del(`worker:info:${clusterName}`);
   }
 
-  public async addPodInfo(clusterName: string, containerId: string,
-    podId: string, podInfo: Types.PodInfo) {
+  public async setPodStatus(clusterName: string, containerId: string,
+    podId: string, podInfo: Types.PodInfoParams) {
     const key = `container:${clusterName}:${containerId}:${podId}`;
     const newPodInfo: any = podInfo;
     newPodInfo.status = JSON.stringify(podInfo.status);
     await this.writePayload(podInfo, key);
   }
 
-  public async deletePodInfo(clusterName: string, containerId: string, podId: string) {
+  public async deletePodStatus(clusterName: string, containerId: string, podId: string) {
     const key = `container:${clusterName}:${containerId}:${podId}`;
     await this.redisClient.del(key);
   }
