@@ -42,7 +42,7 @@ export default class Worker {
     await this.redisClient.set(dbpath, payload);
   }
 
-  public listenReqeust(clusterName: string, methods: Types.workerListenMethod) {
+  public listenRequest(clusterName: string, methods: Types.workerListenMethod) {
     const pattern = `worker:request_queue:${clusterName}:*`;
     this.listenMethodList = methods;
     this.redisClient.on(pattern, async (err, key, value) => {
