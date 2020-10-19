@@ -11,7 +11,7 @@ export type ConditionType = 'Initialized' | 'Ready' | 'ContainersReady' | 'PodSc
 export type ListenMethodList = 'deploy' | 'redeploy' | 'undeploy'
  | 'createNamespace' | 'deleteNamespace'
  | 'createStorage' | 'deleteStorage'
- | 'getContainerInfo';
+ | 'createSecret';
 
 export type workerListenMethod = {
   [type in ListenMethodList]: Function;
