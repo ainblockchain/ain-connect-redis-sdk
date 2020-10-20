@@ -12,32 +12,6 @@ export default class Worker {
     this.redisClient = new RedisClient(options);
   }
 
-  public async getClusterInfo(clusterName: string) {
-    const infoKey = `worker:info:${clusterName}`;
-    const result = await this.redisClient.get(infoKey);
-
-    result.endpointConfig = JSON.parse(result.endpointConfig);
-    result.nodePool = JSON.parse(result.nodePool);
-    return result;
-  }
-
-  public async listenClusterInfo(clusterName: string, callback: Function) {
-    const infoKey = `worker:info:${clusterName}`;
-    this.redisClient.on(infoKey, (err, key, value) => {
-      if (!err) {
-        // key -> worker:info:${clusterName}
-        const parseValue = value;
-        if (value.endpointConfig) {
-          parseValue.endpointConfig = JSON.parse(value.endpointConfig);
-        }
-        if (value.nodePool) {
-          parseValue.endpointConfig = JSON.parse(value.nodePool);
-        }
-        callback(key, parseValue);
-      }
-    });
-  }
-
   public async writePayload(payload: object, dbpath: string) {
     await this.redisClient.set(dbpath, payload);
   }
