@@ -146,19 +146,25 @@ export default class RedisClient {
         if (err) {
           reject(err);
         } else if (type === 'hash') {
-          this.client.hdel(key, (error, value) => {
-            if (error) {
-              reject(error);
+          this.client.hkeys(key, (errHkeys, fields) => {
+            if (errHkeys) {
+              reject(errHkeys);
             } else {
-              resolve(value);
+              this.client.hdel(key, ...fields, (error, reply) => {
+                if (error) {
+                  reject(error);
+                } else {
+                  resolve(reply);
+                }
+              });
             }
           });
         } else { // type === 'string'
-          this.client.del(key, (error, value) => {
+          this.client.del(key, (error, reply) => {
             if (error) {
               reject(error);
             } else {
-              resolve(value);
+              resolve(reply);
             }
           });
         }

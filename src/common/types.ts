@@ -5,7 +5,7 @@ export interface RedisCallback {
 export type EnvType = 'prod' | 'staging';
 
 export type PodPhaseList = 'Pending' | 'Running' | 'Succeeded' | 'Failed' | 'Unknown';
-export type StorageStatus = 'pending' | 'createStorage' | 'success' | 'failed' | 'on-migration';
+export type StorageStatus = 'Available' | 'Bound' | 'Released' | 'Failed';
 
 export type ConditionType = 'Initialized' | 'Ready' | 'ContainersReady' | 'PodScheduled';
 
@@ -74,6 +74,13 @@ export type StorageStatusParams = {
   }
 }
 
+/* Types for Client */
+export type RequestReturn<T> = {
+  statusCode: string;
+  result?: T;
+  errMessage?: string;
+}
+
 export type DeployParams = {
   clusterName?: string;
   namespaceId: string;
@@ -92,10 +99,11 @@ export type DeployParams = {
     imageName: string;
     nodePoolName?: string;
     storageSpec?: {
-      name: string;
-      mountPath: string;
-      subPath?: string;
-      isSecret?: boolean;
+      [storageId: string]: {
+        mountPath: string;
+        subPath?: string;
+        isSecret?: boolean;
+      }
     }
     hwSpec: {
       cpuPerCore: number;
@@ -112,20 +120,12 @@ export type DeployParams = {
   runningTimeout?: number;
 }
 
-/* Types for Client */
-export type RequestReturn<T> = {
-  statusCode: number;
-  result?: T;
-  errMessage?: string;
-}
-
 export type DeployReturn = {
   clusterName: string;
   containerId: string;
   endpoint: {
     [post: string]: string
   };
-  storageId?: string;
 }
 
 export type RedeployParams = {
@@ -178,6 +178,7 @@ export type DeleteStorageParams = {
 }
 
 export type CreateSecretParams = {
+  clusterName: string;
   namespaceId: string;
   name: string;
   type: string;
