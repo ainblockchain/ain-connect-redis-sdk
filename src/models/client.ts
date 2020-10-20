@@ -111,7 +111,9 @@ export default class Client {
         // params.gpu format: {'v100': 1}
         const targetNode = {};
         const nodePool = value.nodePool[nodePoolName];
-        if (!params || !params.gpu || params.gpu[nodePool.gpuType]) {
+        if (!params
+          || (!params.gpu && nodePool.gpuType === '')
+          || (params.gpu && params.gpu[nodePool.gpuType])) {
           const nodeIds = Object.keys(nodePool.nodes);
           for (const nodeId of nodeIds) {
             const node = nodePool.nodes[nodeId];
