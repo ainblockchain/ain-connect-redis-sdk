@@ -95,12 +95,53 @@ export default class Client {
     return res;
   }
 
-  public async getClusterList() {
+  public async getClusterList(params?: Types.GetClusterListParams)
+    : Promise<Types.GetClusterListReturn[]> {
     const keys = await this.redisClient.keys('worker:info:*');
     const res: any[] = [];
     for (const key of keys) {
       const value = await this.redisClient.get(key);
-      res.push({ name: value.clusterName, type: value.type });
+      if (value.nodePool) {
+        value.nodePool = JSON.parse(value.nodePool);
+      }
+
+      const targetNodePool = {};
+      const nodePoolNames = Object.keys(value.nodePool);
+      for (const nodePoolName of nodePoolNames) {
+        // params.gpu format: {'v100': 1}
+        const targetNode = {};
+        const nodePool = value.nodePool[nodePoolName];
+        if (!params || !params.gpu || params.gpu[nodePool.gpuType]) {
+          const nodeIds = Object.keys(nodePool.nodes);
+          for (const nodeId of nodeIds) {
+            const node = nodePool.nodes[nodeId];
+            if (!params
+                || (
+                  (!params.gpu || node.allocatable.gpu >= params.gpu[nodePool.gpuType])
+                  && node.allocatable.cpu >= params.cpu
+                  && node.allocatable.memory >= params.memory
+                )
+            ) {
+              targetNode[nodeId] = node.allocatable;
+            }
+          }
+        }
+        if (Object.keys(targetNode).length !== 0) {
+          targetNodePool[nodePoolName] = {
+            gpuType: nodePool.gpuType,
+            osImage: nodePool.osImage,
+            node: targetNode,
+          };
+        }
+      }
+
+      if (Object.keys(targetNodePool).length !== 0) {
+        res.push({
+          clusterName: value.clusterName,
+          type: value.type,
+          nodePool: targetNodePool,
+        });
+      }
     }
     return res;
   }
