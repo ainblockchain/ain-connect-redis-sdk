@@ -82,6 +82,14 @@ describe('client', () => {
     expect(list.length).toEqual(1);
   });
 
+  it('get cluster without gpu option', async () => {
+    const list = await client.getClusterList({
+      cpu: 100,
+      memory: 1000,
+    });
+    expect(list.length).toEqual(0);
+  });
+
   it('no satified cluster', async () => {
     const list = await client.getClusterList({
       cpu: 500,
