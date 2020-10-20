@@ -37,6 +37,11 @@ describe('redis test', () => {
     redisClient.set('onkey', 'onvalue');
   });
 
+  it('delete string key test', async () => {
+    const reply = await redisClient.del('strkey');
+    expect(reply).toEqual(1);
+  });
+
   // object
   it('set/get object test', async () => {
     const testObj = { key1: 'value1', key2: JSON.stringify({ aaa: 1, ccc: 'ddd' }) };
@@ -62,5 +67,11 @@ describe('redis test', () => {
       done();
     });
     redisClient.set('onobjkey', testObj);
+  });
+
+  it('delete object key test', async () => {
+    const reply = await redisClient.del('objkey');
+    // reply == number of deleted fields
+    expect(reply).toEqual(2);
   });
 });
