@@ -10,10 +10,56 @@ describe('client', () => {
     redisClient = new RedisClient();
     client = new Client();
     const redis = redisClient.getClient();
-    redis.hmset('worker:info:cluster-1', { clusterName: 'cluster-1', type: 'aws' });
-    redis.hmset('worker:info:cluster-2', { clusterName: 'cluster-2', type: 'gcp' });
-    redis.hmset('worker:info:cluster-3', { clusterName: 'cluster-3', type: 'azure' });
-    redis.hmset('worker:info:cluster-4', { clusterName: 'cluster-4', type: 'onprem' });
+    const nodePool1 = {
+      nodePool1: {
+        gpuType: 'v100',
+        osImage: 'ubuntu18.04',
+        nodes: {
+          node1: {
+            capacity: {
+              cpu: '100',
+              memory: '1000',
+              gpu: 1,
+            },
+            allocatable: {
+              cpu: '100',
+              memory: '1000',
+              gpu: 1,
+            },
+          },
+        },
+      },
+    };
+    const nodePool2 = {
+      nodePool1: {
+        gpuType: 'titanx',
+        osImage: 'ubuntu20.04',
+        nodes: {
+          node1: {
+            capacity: {
+              cpu: '300',
+              memory: '10000',
+              gpu: 4,
+            },
+            allocatable: {
+              cpu: '200',
+              memory: '5000',
+              gpu: 2,
+            },
+          },
+        },
+      },
+    };
+    redis.hmset('worker:info:cluster-1', {
+      clusterName: 'cluster-1',
+      type: 'aws',
+      nodePool: JSON.stringify(nodePool1),
+    });
+    redis.hmset('worker:info:cluster-2', {
+      clusterName: 'cluster-2',
+      type: 'gcp',
+      nodePool: JSON.stringify(nodePool2),
+    });
   });
 
   afterAll((done) => {
@@ -24,7 +70,25 @@ describe('client', () => {
 
   it('get cluster list', async () => {
     const list = await client.getClusterList();
-    expect(list.length).toEqual(4);
+    expect(list.length).toEqual(2);
+  });
+
+  it('get specific cluster list', async () => {
+    const list = await client.getClusterList({
+      cpu: 100,
+      memory: 1000,
+      gpu: { v100: 1 },
+    });
+    expect(list.length).toEqual(1);
+  });
+
+  it('no satified cluster', async () => {
+    const list = await client.getClusterList({
+      cpu: 500,
+      memory: 20000,
+      gpu: { v100: 1 },
+    });
+    expect(list.length).toEqual(0);
   });
 
   it('get cluster info', async () => {

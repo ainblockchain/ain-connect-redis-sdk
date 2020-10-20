@@ -95,7 +95,7 @@ export default class Client {
     return res;
   }
 
-  public async getClusterList(params: Types.GetClusterListParams)
+  public async getClusterList(params?: Types.GetClusterListParams)
     : Promise<Types.GetClusterListReturn[]> {
     const keys = await this.redisClient.keys('worker:info:*');
     const res: any[] = [];
@@ -111,13 +111,17 @@ export default class Client {
         // params.gpu format: {'v100': 1}
         const targetNode = {};
         const nodePool = value.nodePool[nodePoolName];
-        if (!params.gpu || params.gpu[nodePool.gpuType]) {
+        if (!params || !params.gpu || params.gpu[nodePool.gpuType]) {
           const nodeIds = Object.keys(nodePool.nodes);
           for (const nodeId of nodeIds) {
             const node = nodePool.nodes[nodeId];
-            if (node.allocatable.gpu >= params.gpu![nodePool.gpuType]
-                && node.allocatable.cpu >= params.cpu
-                && node.allocatable.memory >= params.memory) {
+            if (!params
+                || (
+                  (!params.gpu || node.allocatable.gpu >= params.gpu[nodePool.gpuType])
+                  && node.allocatable.cpu >= params.cpu
+                  && node.allocatable.memory >= params.memory
+                )
+            ) {
               targetNode[nodeId] = node.allocatable;
             }
           }
