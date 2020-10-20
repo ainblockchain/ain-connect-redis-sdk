@@ -1,6 +1,6 @@
 {
   "name": "@aindev/connect-redis-sdk",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "AIN Connect SDK for Redis",
   "repository": {
     "type": "git",
