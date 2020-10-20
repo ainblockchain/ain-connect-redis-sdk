@@ -44,14 +44,14 @@ export type ClusterStatusParams = {
       nodes: {
         [nodeId: string]: {
           capacity: {
-            cpu: string,
-            memory: string
-            gpu: string,
+            cpu: number,
+            memory: number,
+            gpu: number,
           },
           allocatable: {
-            cpu: string,
-            memory: string
-            gpu: string,
+            cpu: number,
+            memory: number,
+            gpu: number,
           }
         }
       }
@@ -82,22 +82,12 @@ export type RequestReturn<T> = {
 }
 
 export type DeployParams = {
-  clusterName?: string;
+  clusterName: string;
   namespaceId: string;
   deployTemplateName?: string
-  selectClusterOption?: {
-    isSingleNode: boolean;
-    isPrivate: boolean;
-    https: boolean;
-    istio: boolean;
-    hwSpec: {
-      isGpu?: boolean;
-      isStorage?: boolean;
-    };
-  }
   containerInfo: {
     imageName: string;
-    nodePoolName?: string;
+    nodePoolName: string;
     storageSpec?: {
       [storageId: string]: {
         mountPath: string;
@@ -106,10 +96,9 @@ export type DeployParams = {
       }
     }
     hwSpec: {
-      cpuPerCore: number;
-      memoryPerGb: number;
+      cpu: number;
+      memory: number;
       gpu: number;
-      storagePerGb?: number;
     }
     replicas?: number;
     command?: string;
@@ -184,6 +173,30 @@ export type CreateSecretParams = {
   type: string;
   data: {
     [key: string]: string
+  };
+}
+
+export type GetClusterListParams = {
+  cpu: number;
+  memory: number;
+  gpu?: object;
+}
+
+export type GetClusterListReturn = {
+  clusterName: string;
+  type: string;
+  nodePool: {
+    [nodePoolName: string]: {
+      gpuType: string,
+      osImage: string,
+      nodes: {
+        [nodeId: string]: {
+          cpu: number,
+          memory: number,
+          gpu: number,
+        }
+      }
+    }
   };
 }
 
