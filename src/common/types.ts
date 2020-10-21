@@ -200,7 +200,7 @@ export type StatusGetterReturn<T> = {
   status: T;
 }
 
-/* getClusterInfo */
+/* getClusterStatus */
 export type GetClusterStatusParams = {
   clusterName: string;
 }
