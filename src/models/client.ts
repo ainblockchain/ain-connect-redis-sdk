@@ -23,19 +23,21 @@ export default class Client {
     const key = `worker:request_queue:${clusterName}:${requestId}`;
     const responseKey = `worker:response:${clusterName}:${requestId}`;
     // write payload as stringified form
-    const value = { type, payload: JSON.stringify(params) };
+    const value = { type, updatedAt: Date.now(), payload: JSON.stringify(params) };
     await this.redisClient.set(key, value);
     const reply = await this.redisClient.once(responseKey);
     if (reply.statusCode === Error.STATUS_CODE.success) {
       return {
         statusCode: Error.STATUS_CODE.success,
         result: JSON.parse(reply.result),
+        updatedAt: reply.updatedAt,
       };
     }
 
     return {
       statusCode: reply.statusCode,
       errMessage: reply.errMessage,
+      updatedAt: reply.updatedAt,
     };
   }
 
