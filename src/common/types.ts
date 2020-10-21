@@ -41,7 +41,7 @@ export type ClusterStatusParams = {
   };
 }
 
-export type PodInfoParams = {
+export type PodStatusParams = {
   podName: string;
   namespaceId: string;
   status: {
@@ -56,20 +56,20 @@ export type PodInfoParams = {
     }
   };
 }
-export type PodStatusParams = {
+export type SetPodStatusParams = {
   clusterName: string;
   containerId: string;
   podId: string;
-  podInfo: PodInfoParams;
+  podStatus: PodStatusParams;
 }
 
-export type StorageInfoParams = {
+export type StorageStatusParams = {
   status: StorageStatus;
 }
-export type StorageStatusParams = {
+export type SetStorageStatusParams = {
   clusterName: string;
   storageId: string;
-  storageInfo: StorageInfoParams;
+  storageStatus: StorageStatusParams;
 }
 
 /* Types for Client */
@@ -212,7 +212,7 @@ export type GetContainerStatusParams = {
   containerId: string;
 }
 export type GetContainerStatusReturn = {
-  [podId: string]: StatusGetterReturn<PodInfoParams>;
+  [podId: string]: StatusGetterReturn<PodStatusParams>;
 }
 
 /* getStorageStatus */
@@ -220,4 +220,4 @@ export type GetStorageStatusParams = {
   clusterName: string;
   storageId: string;
 }
-export type GetStorageStatusReturn = StorageInfoParams;
+export type GetStorageStatusReturn = StorageStatusParams;
