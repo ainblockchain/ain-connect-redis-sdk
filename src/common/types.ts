@@ -18,7 +18,33 @@ export type workerListenMethod = {
   [type in ListenMethodList]: Function;
 };
 
-export type PodInfoParams = {
+export type NodeInfo = {
+  cpu: number;
+  memory: number;
+  gpu: number;
+}
+
+/* Types for Worker */
+/* setClusterStatus */
+export type ClusterStatusParams = {
+  clusterName: string;
+  type: string;
+  nodePool: {
+    [nodePoolName: string]: {
+      gpuType: string,
+      osImage: string,
+      nodes: {
+        [nodeId: string]: {
+          capacity: NodeInfo,
+          allocatable: NodeInfo,
+        }
+      }
+    }
+  };
+}
+
+/* setPodStatus */
+export type PodStatusParams = {
   podName: string;
   namespaceId: string;
   status: {
@@ -32,51 +58,22 @@ export type PodInfoParams = {
       message?: string;
     }
   };
-  updatedAt: number;
 }
-
-export type ClusterStatusParams = {
-  clusterName: string;
-  type: string;
-  nodePool: {
-    [nodePoolName: string]: {
-      gpuType: string,
-      osImage: string,
-      nodes: {
-        [nodeId: string]: {
-          capacity: {
-            cpu: number,
-            memory: number,
-            gpu: number,
-          },
-          allocatable: {
-            cpu: number,
-            memory: number,
-            gpu: number,
-          }
-        }
-      }
-    }
-  };
-  updatedAt: number,
-}
-
-export type PodStatusParams = {
+export type SetPodStatusParams = {
   clusterName: string;
   containerId: string;
   podId: string;
-  podInfo: PodInfoParams;
+  podStatus: PodStatusParams;
 }
 
-export type StorageInfoParams = {
-  status: StorageStatus;
-  updatedAt: number;
-}
-
+/* setStorageStatus */
 export type StorageStatusParams = {
+  status: StorageStatus;
+}
+export type SetStorageStatusParams = {
   clusterName: string;
   storageId: string;
-  storageInfo: StorageInfoParams;
+  storageStatus: StorageStatusParams;
 }
 
 /* Types for Client */
@@ -182,12 +179,12 @@ export type CreateSecretParams = {
   };
 }
 
+/* getClusterList */
 export type GetClusterListParams = {
   cpu: number;
   memory: number;
   gpu?: object;
 }
-
 export type GetClusterListReturn = {
   clusterName: string;
   type: string;
@@ -196,34 +193,35 @@ export type GetClusterListReturn = {
       gpuType: string,
       osImage: string,
       nodes: {
-        [nodeId: string]: {
-          cpu: number,
-          memory: number,
-          gpu: number,
-        }
+        [nodeId: string]: NodeInfo,
       }
     }
   };
 }
 
-export type GetClusterInfoParams = {
-  clusterName: string;
+export type StatusGetterReturn<T> = {
+  updatedAt: number;
+  status: T;
 }
 
-export type GetClusterInfoReturn = ClusterStatusParams;
+/* getClusterStatus */
+export type GetClusterStatusParams = {
+  clusterName: string;
+}
+export type GetClusterStatusReturn = ClusterStatusParams;
 
-export type GetContainerInfoParams = {
+/* getContainerStatus */
+export type GetContainerStatusParams = {
   clusterName: string;
   containerId: string;
 }
-
-export type GetContainerInfoReturn = {
-  [podId: string]: PodInfoParams;
+export type GetContainerStatusReturn = {
+  [podId: string]: StatusGetterReturn<PodStatusParams>;
 }
 
-export type GetStorageInfoParams = {
+/* getStorageStatus */
+export type GetStorageStatusParams = {
   clusterName: string;
   storageId: string;
 }
-
-export type GetStorageInfoReturn = StorageInfoParams;
+export type GetStorageStatusReturn = StorageStatusParams;
