@@ -13,7 +13,8 @@ export default class Worker {
   }
 
   public async writePayload(payload: object, dbpath: string) {
-    await this.redisClient.set(dbpath, payload);
+    const timePayload = { updatedAt: Date.now(), ...payload };
+    await this.redisClient.set(dbpath, timePayload);
   }
 
   public listenRequest(clusterName: string, methods: Types.workerListenMethod) {
