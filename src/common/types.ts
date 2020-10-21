@@ -24,6 +24,8 @@ export type NodeInfo = {
   gpu: number;
 }
 
+/* Types for Worker */
+/* setClusterStatus */
 export type ClusterStatusParams = {
   clusterName: string;
   type: string;
@@ -41,6 +43,7 @@ export type ClusterStatusParams = {
   };
 }
 
+/* setPodStatus */
 export type PodStatusParams = {
   podName: string;
   namespaceId: string;
@@ -63,6 +66,7 @@ export type SetPodStatusParams = {
   podStatus: PodStatusParams;
 }
 
+/* setStorageStatus */
 export type StorageStatusParams = {
   status: StorageStatus;
 }
