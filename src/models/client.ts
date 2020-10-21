@@ -150,26 +150,26 @@ export default class Client {
     return res;
   }
 
-  public async getClusterInfo(params: Types.GetClusterInfoParams)
-    : Promise<Types.ClusterStatusParams> {
-    const infoPath = `worker:info:${params.clusterName}`;
-    const res = await this.redisClient.get(infoPath);
+  public async getClusterStatus(params: Types.GetClusterStatusParams)
+    : Promise<Types.StatusGetterReturn<Types.GetClusterStatusReturn>> {
+    const statusPath = `worker:info:${params.clusterName}`;
+    const res = await this.redisClient.get(statusPath);
     /* parse stringified property in setClusterStatus() */
-    if (res.nodePool) {
-      res.nodePool = JSON.parse(res.nodePool);
+    if (res.status) {
+      res.status = JSON.parse(res.status);
     }
     return res;
   }
 
-  public async getContainerInfo(params: Types.GetContainerInfoParams)
-    : Promise<Types.GetContainerInfoReturn> {
+  public async getContainerStatus(params: Types.GetContainerStatusParams)
+    : Promise<Types.GetContainerStatusReturn> {
     const pattern = `container:${params.clusterName}:${params.containerId}:*`;
     const keys = await this.redisClient.keys(pattern);
     const res = {};
     for (const key of keys) {
       const value = await this.redisClient.get(key);
       const podId = key.split(':')[3];
-      /* parse stringified property in addPodInfo() */
+      /* parse stringified property in setPodStatus() */
       if (value.status) {
         value.status = JSON.parse(value.status);
       }
@@ -178,10 +178,13 @@ export default class Client {
     return res;
   }
 
-  public async getStorageInfo(params: Types.GetStorageInfoParams)
-    : Promise<Types.GetStorageInfoReturn> {
-    const infoPath = `stroage:${params.clusterName}:${params.storageId}`;
-    const res = await this.redisClient.get(infoPath);
+  public async getStorageStatus(params: Types.GetStorageStatusParams)
+    : Promise<Types.StatusGetterReturn<Types.GetStorageStatusReturn>> {
+    const statusPath = `stroage:${params.clusterName}:${params.storageId}`;
+    const res = await this.redisClient.get(statusPath);
+    if (res.status) {
+      res.status = JSON.parse(res.status);
+    }
     return res;
   }
 }

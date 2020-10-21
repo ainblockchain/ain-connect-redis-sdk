@@ -12,9 +12,9 @@ export default class Worker {
     this.redisClient = new RedisClient(options);
   }
 
-  public async writePayload(payload: object, dbpath: string) {
-    const timePayload = { updatedAt: Date.now(), ...payload };
-    await this.redisClient.set(dbpath, timePayload);
+  public async writeResponse(response: object, dbpath: string) {
+    const timeResponse = { updatedAt: Date.now(), ...response };
+    await this.redisClient.set(dbpath, timeResponse);
   }
 
   public listenRequest(clusterName: string, methods: Types.workerListenMethod) {
@@ -25,7 +25,7 @@ export default class Worker {
       const resPath = `worker:response:${clusterName}:${requestId}`;
       const { type, payload } = value;
       if (err) {
-        await this.writePayload({
+        await this.writeResponse({
           statusCode: Error.STATUS_CODE.unexpected,
           errMessage: err,
         }, resPath);
@@ -33,18 +33,18 @@ export default class Worker {
         // parse stringified payload
         try {
           const res = await this.listenMethodList[type](JSON.parse(payload));
-          await this.writePayload({
+          await this.writeResponse({
             statusCode: Error.STATUS_CODE.success,
             result: JSON.stringify(res),
           }, resPath);
         } catch (e) {
-          await this.writePayload({
+          await this.writeResponse({
             statusCode: e.statusCode,
             errMessage: e.errMessage,
           }, resPath);
         }
       } else {
-        await this.writePayload({
+        await this.writeResponse({
           statusCode: Error.STATUS_CODE.invalidParams,
           errMessage: 'invalid type',
         }, resPath);
@@ -53,21 +53,26 @@ export default class Worker {
     return null;
   }
 
-  public async setClusterStatus(option: Types.ClusterStatusParams) {
-    const newOption: any = option;
-    newOption.nodePool = JSON.stringify(option.nodePool);
-    await this.writePayload(option, `worker:info:${option.clusterName}`);
+  public async writeStatus(status: object, dbpath: string) {
+    const timePayload = {
+      updatedAt: Date.now(),
+      status: JSON.stringify(status),
+    };
+    await this.redisClient.set(dbpath, timePayload);
+  }
+
+  public async setClusterStatus(status: Types.ClusterStatusParams) {
+    await this.writeStatus(status, `worker:info:${status.clusterName}`);
   }
 
   public async deleteClusterStatus(clusterName: string) {
     await this.redisClient.del(`worker:info:${clusterName}`);
   }
 
-  public async setPodStatus(option: Types.PodStatusParams) {
-    const key = `container:${option.clusterName}:${option.containerId}:${option.podId}`;
-    const newPodInfo: any = option.podInfo;
-    newPodInfo.status = JSON.stringify(option.podInfo.status);
-    await this.writePayload(newPodInfo, key);
+  public async setPodStatus(status: Types.PodStatusParams) {
+    const { clusterName, containerId, podId } = status;
+    const key = `container:${clusterName}:${containerId}:${podId}`;
+    await this.writeStatus(status, key);
   }
 
   public async deletePodStatus(clusterName: string, containerId: string, podId: string) {
@@ -75,9 +80,9 @@ export default class Worker {
     await this.redisClient.del(key);
   }
 
-  public async setStorageStatus(option: Types.StorageStatusParams) {
-    const key = `storage:${option.clusterName}:${option.storageId}`;
-    await this.writePayload(option.storageInfo, key);
+  public async setStorageStatus(status: Types.StorageStatusParams) {
+    const key = `storage:${status.clusterName}:${status.storageId}`;
+    await this.writeStatus(status.storageInfo, key);
   }
 
   public async deleteStorageStatus(clusterName: string, storageId: string) {

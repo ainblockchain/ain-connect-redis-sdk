@@ -31,7 +31,7 @@ describe('client', () => {
       },
     };
     const nodePool2 = {
-      nodePool1: {
+      nodePool2: {
         gpuType: 'titanx',
         osImage: 'ubuntu20.04',
         nodes: {
@@ -51,14 +51,20 @@ describe('client', () => {
       },
     };
     redis.hmset('worker:info:cluster-1', {
-      clusterName: 'cluster-1',
-      type: 'aws',
-      nodePool: JSON.stringify(nodePool1),
+      updatedAt: 50,
+      status: JSON.stringify({
+        clusterName: 'cluster-1',
+        type: 'aws',
+        nodePool: nodePool1,
+      }),
     });
     redis.hmset('worker:info:cluster-2', {
-      clusterName: 'cluster-2',
-      type: 'gcp',
-      nodePool: JSON.stringify(nodePool2),
+      updatedAt: 100,
+      status: JSON.stringify({
+        clusterName: 'cluster-2',
+        type: 'gcp',
+        nodePool: nodePool2,
+      }),
     });
   });
 
@@ -100,9 +106,9 @@ describe('client', () => {
   });
 
   it('get cluster info', async () => {
-    const info = await client.getClusterInfo({
+    const info = await client.getClusterStatus({
       clusterName: 'cluster-1',
     });
-    expect(info.clusterName + info.type).toEqual('cluster-1aws');
+    expect(info.status.clusterName + info.status.type).toEqual('cluster-1aws');
   });
 });
