@@ -176,7 +176,7 @@ export default class Client {
 
   public async getStorageStatus(params: Types.GetStorageStatusParams)
     : Promise<Types.StatusGetterReturn<Types.GetStorageStatusReturn>> {
-    const statusPath = `stroage:${params.clusterName}:${params.storageId}`;
+    const statusPath = `storage:${params.clusterName}:${params.storageId}`;
     const res = await this.redisClient.get(statusPath);
     if (res.status) {
       res.status = JSON.parse(res.status);
