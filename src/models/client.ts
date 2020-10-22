@@ -103,16 +103,14 @@ export default class Client {
     const res: any[] = [];
     for (const key of keys) {
       const value = await this.redisClient.get(key);
-      if (value.nodePool) {
-        value.nodePool = JSON.parse(value.nodePool);
-      }
+      const status = JSON.parse(value.status);
 
       const targetNodePool = {};
-      const nodePoolNames = Object.keys(value.nodePool);
+      const nodePoolNames = Object.keys(status.nodePool);
       for (const nodePoolName of nodePoolNames) {
         // params.gpu format: {'v100': 1}
         const targetNode = {};
-        const nodePool = value.nodePool[nodePoolName];
+        const nodePool = status.nodePool[nodePoolName];
         if (!params
           || (!params.gpu && nodePool.gpuType === '')
           || (params.gpu && params.gpu[nodePool.gpuType])) {
@@ -141,9 +139,8 @@ export default class Client {
 
       if (Object.keys(targetNodePool).length !== 0) {
         res.push({
-          clusterName: value.clusterName,
-          type: value.type,
-          nodePool: targetNodePool,
+          updatedAt: value.updatedAt,
+          status,
         });
       }
     }
