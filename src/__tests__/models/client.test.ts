@@ -5,12 +5,11 @@ let redisClient: RedisClient;
 let client: Client;
 
 describe('client', () => {
-  beforeAll(() => {
+  beforeAll(async () => {
     // need local redis server for test
     redisClient = new RedisClient();
     client = new Client();
     const redis = redisClient.getClient();
-    redis.flushall();
     const nodePool1 = {
       nodePool1: {
         gpuType: 'v100',
