@@ -109,6 +109,6 @@ describe('client', () => {
     const info = await client.getClusterStatus({
       clusterName: 'cluster-1',
     });
-    expect(info.status.clusterName + info.status.type).toEqual('cluster-1aws');
+    expect(info!.status.clusterName + info!.status.type).toEqual('cluster-1aws');
   });
 });
