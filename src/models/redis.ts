@@ -62,20 +62,24 @@ export default class RedisClient {
     delete this.callbackTable[pattern];
   }
 
-  public once(pattern: string): Promise<any> {
+  /* once
+   * Write `value` to `key` after subscribing `pattern` key event
+   */
+  public once(key: string, value: string | object, pattern: string): Promise<any> {
     return new Promise((resolve, reject) => {
       this.onceSub.psubscribe(`__keyspace@0__:${pattern}`);
       this.onceSub.on('pmessage', (_pattern, channel, message) => {
         if (message === 'set' || message === 'hset') {
           this.onceSub.unsubscribe(`__keyspace@0__:${pattern}`);
-          const key = channel.slice(15);
-          this.get(key).then((value) => {
-            resolve(value);
+          const waitKey = channel.slice(15);
+          this.get(waitKey).then((waitValue) => {
+            resolve(waitValue);
           }).catch((err) => {
             reject(err);
           });
         }
       });
+      this.set(key, value);
     });
   }
 

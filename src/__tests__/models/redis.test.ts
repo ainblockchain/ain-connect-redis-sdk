@@ -21,12 +21,9 @@ describe('redis test', () => {
     expect(value).toEqual('value');
   });
 
-  it('once string test', (done) => {
-    redisClient.once('oncekey').then((value) => {
-      expect(value).toEqual('oncevalue');
-      done();
-    });
-    redisClient.set('oncekey', 'oncevalue');
+  it('once string test', async () => {
+    const value = await redisClient.once('oncekey', 'oncevalue', 'oncekey');
+    expect(value).toEqual('oncevalue');
   });
 
   it('on string test', (done) => {
@@ -51,13 +48,10 @@ describe('redis test', () => {
     expect(value).toEqual(testObj);
   });
 
-  it('once object test', (done) => {
+  it('once object test', async () => {
     const testObj = { key1: 'value1', key2: 'value2' };
-    redisClient.once('onceobjkey').then((value) => {
-      expect(value).toEqual(testObj);
-      done();
-    });
-    redisClient.set('onceobjkey', testObj);
+    const value = await redisClient.once('onceobjkey', testObj, 'onceobjkey');
+    expect(value).toEqual(testObj);
   });
 
   it('on object test', (done) => {
