@@ -173,6 +173,7 @@ export default class Client {
         }
         res[podId] = value;
       }
+      return res;
     }
     return null;
   }
