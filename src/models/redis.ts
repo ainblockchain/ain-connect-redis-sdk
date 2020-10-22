@@ -62,6 +62,9 @@ export default class RedisClient {
     delete this.callbackTable[pattern];
   }
 
+  /* once
+   * Write `value` to `key` after subscribing `pattern` key event
+   */
   public once(key: string, value: string | object, pattern: string): Promise<any> {
     return new Promise((resolve, reject) => {
       this.onceSub.psubscribe(`__keyspace@0__:${pattern}`);
