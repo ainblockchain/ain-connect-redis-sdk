@@ -202,7 +202,7 @@ export type GetClusterListReturn = {
 export type StatusGetterReturn<T> = {
   updatedAt: number;
   status: T;
-}
+} | null;
 
 /* getClusterStatus */
 export type GetClusterStatusParams = {
@@ -217,7 +217,7 @@ export type GetContainerStatusParams = {
 }
 export type GetContainerStatusReturn = {
   [podId: string]: StatusGetterReturn<PodStatusParams>;
-}
+} | null;
 
 /* getStorageStatus */
 export type GetStorageStatusParams = {
