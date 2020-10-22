@@ -10,6 +10,7 @@ describe('client', () => {
     redisClient = new RedisClient();
     client = new Client();
     const redis = redisClient.getClient();
+    redis.flushall();
     const nodePool1 = {
       nodePool1: {
         gpuType: 'v100',

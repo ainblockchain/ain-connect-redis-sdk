@@ -6,6 +6,7 @@ describe('redis test', () => {
   beforeAll(() => {
     // need local redis server for test
     redisClient = new RedisClient();
+    redisClient.getClient().flushall();
   });
 
   afterAll((done) => {

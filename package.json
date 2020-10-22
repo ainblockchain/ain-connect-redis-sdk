@@ -18,7 +18,7 @@
     "redis"
   ],
   "scripts": {
-    "test": "jest",
+    "test": "jest -i",
     "build": "./build.sh",
     "start": "tsc && node dist/index.js serve",
     "lint": "eslint src/*.ts src/**/*.ts src/**/**/*.ts src/**/**/**/*.ts",
