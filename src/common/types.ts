@@ -19,8 +19,8 @@ export type workerListenMethod = {
 };
 
 export type NodeInfo = {
-  cpu: number;
-  memory: number;
+  cpu: number; // m
+  memory: number; // Mi
   gpu: number;
 }
 
@@ -51,7 +51,7 @@ export type PodStatusParams = {
     phase: PodPhaseList;
     message?: string;
     startTime?:string;
-    condition: {
+    condition?: {
       type: ConditionType;
       status: boolean;
       reason?: string;
@@ -94,8 +94,11 @@ export type DeployParams = {
     storageSpec?: {
       [storageId: string]: {
         mountPath: string;
-        subPath?: string;
-        isSecret?: boolean;
+      }
+    }
+    secretSpec?: {
+      [secretId: string]: {
+        mountPath: string;
       }
     }
     hwSpec: {
@@ -154,9 +157,11 @@ export type DeleteNamespaceParams = {
 export type CreateStorageParams = {
   clusterName: string;
   namespaceId: string;
-  capacity: string;
-  subPath?: string;
-  shared?: boolean;
+  capacity: number; // Gi
+  nfs?: {
+    ip: string;
+    basePath: string;
+  }
 }
 
 export type CreateStorageReturn = {
@@ -202,7 +207,7 @@ export type GetClusterListReturn = {
 export type StatusGetterReturn<T> = {
   updatedAt: number;
   status: T;
-}
+} | null;
 
 /* getClusterStatus */
 export type GetClusterStatusParams = {
@@ -217,7 +222,7 @@ export type GetContainerStatusParams = {
 }
 export type GetContainerStatusReturn = {
   [podId: string]: StatusGetterReturn<PodStatusParams>;
-}
+} | null;
 
 /* getStorageStatus */
 export type GetStorageStatusParams = {

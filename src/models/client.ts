@@ -151,36 +151,41 @@ export default class Client {
     const statusPath = `worker:info:${params.clusterName}`;
     const res = await this.redisClient.get(statusPath);
     /* parse stringified property in setClusterStatus() */
-    if (res.status) {
+    if (res) {
       res.status = JSON.parse(res.status);
+      return res;
     }
-    return res;
+    return null;
   }
 
   public async getContainerStatus(params: Types.GetContainerStatusParams)
     : Promise<Types.GetContainerStatusReturn> {
     const pattern = `container:${params.clusterName}:${params.containerId}:*`;
     const keys = await this.redisClient.keys(pattern);
-    const res = {};
-    for (const key of keys) {
-      const value = await this.redisClient.get(key);
-      const podId = key.split(':')[3];
-      /* parse stringified property in setPodStatus() */
-      if (value.status) {
-        value.status = JSON.parse(value.status);
+    if (keys.length !== 0) {
+      const res = {};
+      for (const key of keys) {
+        const value = await this.redisClient.get(key);
+        const podId = key.split(':')[3];
+        /* parse stringified property in setPodStatus() */
+        if (value.status) {
+          value.status = JSON.parse(value.status);
+        }
+        res[podId] = value;
       }
-      res[podId] = value;
+      return res;
     }
-    return res;
+    return null;
   }
 
   public async getStorageStatus(params: Types.GetStorageStatusParams)
     : Promise<Types.StatusGetterReturn<Types.GetStorageStatusReturn>> {
     const statusPath = `storage:${params.clusterName}:${params.storageId}`;
     const res = await this.redisClient.get(statusPath);
-    if (res.status) {
+    if (res) {
       res.status = JSON.parse(res.status);
+      return res;
     }
-    return res;
+    return null;
   }
 }
