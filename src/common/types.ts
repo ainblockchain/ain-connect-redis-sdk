@@ -87,7 +87,7 @@ export type RequestReturn<T> = {
 export type DeployParams = {
   clusterName: string;
   namespaceId: string;
-  deployTemplateName?: string
+  deployTemplateName?: string;
   containerInfo: {
     imageName: string;
     nodePoolName: string;
@@ -158,7 +158,7 @@ export type CreateStorageParams = {
   clusterName: string;
   namespaceId: string;
   capacity: number; // Gi
-  nfs?: {
+  isSharedNfs?: {
     ip: string;
     basePath: string;
   }
@@ -172,6 +172,7 @@ export type DeleteStorageParams = {
   clusterName: string;
   namespaceId: string;
   storageId: string;
+  sharedNfs: boolean;
 }
 
 export type CreateSecretParams = {
