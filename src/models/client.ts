@@ -96,6 +96,19 @@ export default class Client {
     return res;
   }
 
+  /* FTP */
+  public async putStorageToFtp(params: Types.PutStorageToFtpParams)
+    : Promise<Types.RequestReturn<null>> {
+    const res = await this.sendRequest('putStorageToFtp', params);
+    return res;
+  }
+
+  public async getStorageFromFtp(params: Types.GetStorageFromFtpParams)
+    : Promise<Types.RequestReturn<null>> {
+    const res = await this.sendRequest('getStorageFromFtp', params);
+    return res;
+  }
+
   public async getClusterList(params?: Types.GetClusterListParams)
     : Promise<Types.GetClusterListReturn[]> {
     const keys = await this.redisClient.keys('worker:info:*');

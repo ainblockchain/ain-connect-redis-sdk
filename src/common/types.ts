@@ -12,7 +12,7 @@ export type ConditionType = 'Initialized' | 'Ready' | 'ContainersReady' | 'PodSc
 export type ListenMethodList = 'deploy' | 'redeploy' | 'undeploy'
  | 'createNamespace' | 'deleteNamespace'
  | 'createStorage' | 'deleteStorage'
- | 'createSecret';
+ | 'createSecret' | 'putStorageToFtp' | 'getStorageFromFtp';
 
 export type workerListenMethod = {
   [type in ListenMethodList]: Function;
@@ -183,6 +183,21 @@ export type CreateSecretParams = {
   data: {
     [key: string]: string
   };
+}
+
+export type PutStorageToFtpParams = {
+  clusterName: string;
+  namespaceId: string;
+  storageId: string;
+  toStorageId: string;
+  timestamp: string;
+}
+
+export type GetStorageFromFtpParams = {
+  clusterName: string;
+  namespaceId: string;
+  storageId: string;
+  timestamp: string;
 }
 
 /* getClusterList */
