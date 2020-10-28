@@ -83,7 +83,7 @@ describe('client', () => {
     const list = await client.getClusterList({
       cpu: 100,
       memory: 1000,
-      gpu: { v100: 1 },
+      gpu: { v100: 0 },
     });
     expect(list.length).toEqual(1);
   });
