@@ -109,6 +109,13 @@ export default class Client {
     return res;
   }
 
+  /* Container Log */
+  public async getContainerLog(params: Types.GetContainerLogParams)
+    : Promise<Types.RequestReturn<Types.GetContainerLogReturn>> {
+    const res = await this.sendRequest('getContainerLog', params);
+    return res;
+  }
+
   public async getClusterList(params?: Types.GetClusterListParams)
     : Promise<Types.GetClusterListReturn[]> {
     const keys = await this.redisClient.keys('worker:info:*');
