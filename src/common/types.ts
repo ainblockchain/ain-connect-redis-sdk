@@ -159,7 +159,7 @@ export type CreateStorageParams = {
   clusterName: string;
   namespaceId: string;
   capacity: number; // Gi
-  isSharedNfs?: {
+  sharedNfs?: {
     ip: string;
     basePath: string;
   }
@@ -173,7 +173,7 @@ export type DeleteStorageParams = {
   clusterName: string;
   namespaceId: string;
   storageId: string;
-  sharedNfs: boolean;
+  isSharedNfs: boolean;
 }
 
 export type CreateSecretParams = {
