@@ -120,7 +120,7 @@ export type DeployReturn = {
   clusterName: string;
   containerId: string;
   endpoint: {
-    [post: string]: string
+    [port: string]: string
   };
 }
 
