@@ -17,13 +17,13 @@ describe('client', () => {
         nodes: {
           node1: {
             capacity: {
-              cpu: '100',
-              memory: '1000',
+              cpu: 3920,
+              memory: 15432,
               gpu: 1,
             },
             allocatable: {
-              cpu: '100',
-              memory: '1000',
+              cpu: 1920,
+              memory: 10152,
               gpu: 1,
             },
           },
@@ -81,9 +81,9 @@ describe('client', () => {
 
   it('get specific cluster list', async () => {
     const list = await client.getClusterList({
-      cpu: 100,
+      cpu: 1800,
       memory: 1000,
-      gpu: { v100: 0 },
+      gpu: { v100: 1 },
     });
     expect(list.length).toEqual(1);
   });
@@ -96,7 +96,7 @@ describe('client', () => {
     expect(list.length).toEqual(0);
   });
 
-  it('no satified cluster', async () => {
+  it('no satisfied cluster', async () => {
     const list = await client.getClusterList({
       cpu: 500,
       memory: 20000,

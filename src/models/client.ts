@@ -4,6 +4,13 @@ import * as Types from '../common/types';
 import RedisClient from './redis';
 import * as Error from '../common/error';
 
+const PodPhasePriority = {
+  failed: 1,
+  pending: 2,
+  createContainer: 3,
+  success: 4,
+};
+
 function getRandomRequestId() {
   const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 25);
   return nanoid();
@@ -184,18 +191,19 @@ export default class Client {
     : Promise<Types.GetContainerStatusReturn> {
     const pattern = `container:${params.clusterName}:${params.containerId}:*`;
     const keys = await this.redisClient.keys(pattern);
+    let curStatus: Types.PodPhaseList = 'failed';
     if (keys.length !== 0) {
-      const res = {};
       for (const key of keys) {
         const value = await this.redisClient.get(key);
-        const podId = key.split(':')[3];
         /* parse stringified property in setPodStatus() */
         if (value.status) {
           value.status = JSON.parse(value.status);
+          if (PodPhasePriority[curStatus] < PodPhasePriority[value.status.status.phase]) {
+            curStatus = value.status.status.phase;
+          }
         }
-        res[podId] = value;
       }
-      return res;
+      return { containerStatus: curStatus };
     }
     return null;
   }
