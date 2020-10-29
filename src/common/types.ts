@@ -3,9 +3,9 @@ export interface RedisCallback {
 }
 
 export type EnvType = 'prod' | 'staging';
-
-export type PodPhaseList = 'Pending' | 'Running' | 'Succeeded' | 'Failed' | 'Unknown';
-export type StorageStatus = 'Available' | 'Bound' | 'Released' | 'Failed';
+// sleep < failed < pending < createContainer < success
+export type PodPhaseList = 'failed' | 'pending' | 'createContainer' | 'success';
+export type StorageStatus = 'failed' | 'pending' | 'createStorage' | 'success';
 
 export type ConditionType = 'Initialized' | 'Ready' | 'ContainersReady' | 'PodScheduled';
 
@@ -253,7 +253,7 @@ export type GetContainerStatusParams = {
   containerId: string;
 }
 export type GetContainerStatusReturn = {
-  [podId: string]: StatusGetterReturn<PodStatusParams>;
+  containerStatus: PodPhaseList;
 } | null;
 
 /* getStorageStatus */
