@@ -159,7 +159,9 @@ export default class Client {
       if (Object.keys(targetNodePool).length !== 0) {
         res.push({
           updatedAt: value.updatedAt,
-          status,
+          clusterName: status.clusterName,
+          type: status.type,
+          nodePoo: targetNodePool,
         });
       }
     }

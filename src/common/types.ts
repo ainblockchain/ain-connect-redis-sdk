@@ -229,6 +229,7 @@ export type GetClusterListReturn = {
       }
     }
   };
+  updatedAt: number;
 }
 
 export type StatusGetterReturn<T> = {
