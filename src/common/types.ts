@@ -89,6 +89,7 @@ export type DeployParams = {
   clusterName: string;
   namespaceId: string;
   deployTemplateName?: string;
+  maxDuration?: number;
   containerInfo: {
     imageName: string;
     nodePoolName: string;
