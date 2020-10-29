@@ -161,7 +161,7 @@ export default class Client {
           updatedAt: value.updatedAt,
           clusterName: status.clusterName,
           type: status.type,
-          nodePoo: targetNodePool,
+          nodePool: targetNodePool,
         });
       }
     }
