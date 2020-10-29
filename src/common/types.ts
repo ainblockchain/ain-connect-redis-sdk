@@ -205,6 +205,7 @@ export type GetContainerLogParams = {
   clusterName: string;
   namespaceId: string;
   containerId: string;
+  fromTimestamp?: number;
 }
 export type GetContainerLogReturn = {
   log: string;
