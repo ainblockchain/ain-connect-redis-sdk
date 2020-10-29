@@ -226,7 +226,10 @@ export type GetClusterListReturn = {
       gpuType: string,
       osImage: string,
       nodes: {
-        [nodeId: string]: NodeInfo,
+        [nodeId: string]: {
+          capacity: NodeInfo,
+          allocatable: NodeInfo,
+        }
       }
     }
   };

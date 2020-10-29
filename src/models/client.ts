@@ -143,7 +143,7 @@ export default class Client {
                   && node.allocatable.memory >= params.memory
                 )
             ) {
-              targetNode[nodeId] = node.allocatable;
+              targetNode[nodeId] = node;
             }
           }
         }
