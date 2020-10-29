@@ -151,7 +151,7 @@ export default class Client {
           targetNodePool[nodePoolName] = {
             gpuType: nodePool.gpuType,
             osImage: nodePool.osImage,
-            node: targetNode,
+            nodes: targetNode,
           };
         }
       }
