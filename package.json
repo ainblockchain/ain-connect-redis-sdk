@@ -48,8 +48,10 @@
     }
   },
   "dependencies": {
+    "@types/async-redis": "^1.1.1",
+    "@types/redis": "^2.8.27",
+    "async-redis": "^1.1.7",
     "nanoid": "^3.1.12",
-    "redis": "^3.0.2",
-    "@types/redis": "^2.8.27"
+    "redis": "^3.0.2"
   }
 }

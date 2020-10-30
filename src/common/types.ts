@@ -51,7 +51,7 @@ export type PodStatusParams = {
   status: {
     phase: PodPhaseList;
     message?: string;
-    startTime?:string;
+    startTime?: string;
     condition?: {
       type: ConditionType;
       status: boolean;

@@ -1,15 +1,14 @@
-import RedisClient from '../../models/redis';
+import AsyncRedis from 'async-redis';
 import Client from '../../models/client';
 
-let redisClient: RedisClient;
+let redis: any;
 let client: Client;
 
 describe('client', () => {
   beforeAll(async () => {
     // need local redis server for test
-    redisClient = new RedisClient();
+    redis = AsyncRedis.createClient();
     client = new Client();
-    const redis = redisClient.getClient();
     const nodePool1 = {
       nodePool1: {
         gpuType: 'v100',
@@ -50,7 +49,7 @@ describe('client', () => {
         },
       },
     };
-    redis.hmset('worker:info:cluster-1', {
+    await redis.hmset('worker:info:cluster-1', {
       updatedAt: 50,
       status: JSON.stringify({
         clusterName: 'cluster-1',
@@ -58,7 +57,7 @@ describe('client', () => {
         nodePool: nodePool1,
       }),
     });
-    redis.hmset('worker:info:cluster-2', {
+    await redis.hmset('worker:info:cluster-2', {
       updatedAt: 100,
       status: JSON.stringify({
         clusterName: 'cluster-2',
@@ -66,10 +65,40 @@ describe('client', () => {
         nodePool: nodePool2,
       }),
     });
+    await redis.hmset('container:cluster-1:container1:pod1', {
+      updatedAt: 100,
+      status: JSON.stringify({
+        podName: 'pod1',
+        namespaceId: 'namespace1',
+        status: {
+          phase: 'success',
+          startTime: 'Thu Oct 29 2020 14:16:32 GMT+0000 (Coordinated Universal Time)',
+          condition: {
+            type: 'Initialized',
+            status: true,
+          },
+        },
+      }),
+    });
+    await redis.hmset('container:cluster-1:container1:pod2', {
+      updatedAt: 100,
+      status: JSON.stringify({
+        podName: 'pod2',
+        namespaceId: 'namespace2',
+        status: {
+          phase: 'pending',
+          startTime: 'Thu Oct 30 2020 14:16:32 GMT+0000 (Coordinated Universal Time)',
+          condition: {
+            type: 'Initialized',
+            status: true,
+          },
+        },
+      }),
+    });
   });
 
   afterAll((done) => {
-    redisClient.unref();
+    redis.unref();
     client.unref();
     done();
   });
@@ -110,5 +139,13 @@ describe('client', () => {
       clusterName: 'cluster-1',
     });
     expect(info!.status.clusterName + info!.status.type).toEqual('cluster-1aws');
+  });
+
+  it('get container status', async () => {
+    const status = await client.getContainerStatus({
+      clusterName: 'cluster-1',
+      containerId: 'container1',
+    });
+    expect(status!.containerStatus).toEqual('success');
   });
 });
