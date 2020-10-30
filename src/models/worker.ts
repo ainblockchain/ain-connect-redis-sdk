@@ -30,14 +30,17 @@ export default class Worker {
 
       for (const key of curKeys) {
         const requestId = key.split(':')[3];
-        const resKey = `worker:response:${clusterName}:${requestId}`;
-        const response = await this.redisClient.get(resKey);
-        if (!response) {
-          // unhandled request
-          await this.writeResponse({
-            statusCode: Error.STATUS_CODE.unhandledRequest,
-            errMessage: 'request timeout',
-          }, resKey);
+        const request = await this.redisClient.get(key);
+        if (request.updatedAt < curTime) {
+          const resKey = `worker:response:${clusterName}:${requestId}`;
+          const response = await this.redisClient.get(resKey);
+          if (!response) {
+            // unhandled request
+            await this.writeResponse({
+              statusCode: Error.STATUS_CODE.unhandledRequest,
+              errMessage: 'request timeout',
+            }, resKey);
+          }
         }
       }
     } while (cursor !== '0');
