@@ -1,6 +1,7 @@
 export const enum STATUS_CODE {
   success = '0',
   invalidParams = '1',
+  unhandledRequest = '2',
   unexpected = '500',
 }
 

@@ -1,4 +1,5 @@
 import { ClientOpts } from 'redis';
+import { promisify } from 'util';
 import RedisClient from './redis';
 import * as Types from '../common/types';
 import * as Error from '../common/error';
@@ -17,9 +18,38 @@ export default class Worker {
     await this.redisClient.set(dbpath, timeResponse);
   }
 
+  public async timeoutUnhandledRequest(clusterName: string, curTime: number) {
+    const redis = this.redisClient.getClient();
+    const scan = promisify(redis.scan).bind(redis);
+    const pattern = `worker:request_queue:${clusterName}:*`;
+    let cursor = '0';
+    do {
+      const res = await scan(cursor, 'MATCH', pattern);
+      const [nextCursor, curKeys] = res;
+      cursor = nextCursor;
+
+      for (const key of curKeys) {
+        const requestId = key.split(':')[3];
+        const request = await this.redisClient.get(key);
+        if (request.updatedAt < curTime) {
+          const resKey = `worker:response:${clusterName}:${requestId}`;
+          const response = await this.redisClient.get(resKey);
+          if (!response) {
+            // unhandled request
+            await this.writeResponse({
+              statusCode: Error.STATUS_CODE.unhandledRequest,
+              errMessage: 'request timeout',
+            }, resKey);
+          }
+        }
+      }
+    } while (cursor !== '0');
+  }
+
   public listenRequest(clusterName: string, methods: Types.workerListenMethod) {
     const pattern = `worker:request_queue:${clusterName}:*`;
     this.listenMethodList = methods;
+    const curTime = Date.now();
     this.redisClient.on(pattern, async (err, key, value) => {
       const requestId = key?.split(':')[3];
       const resPath = `worker:response:${clusterName}:${requestId}`;
@@ -50,7 +80,7 @@ export default class Worker {
         }, resPath);
       }
     });
-    return null;
+    this.timeoutUnhandledRequest(clusterName, curTime);
   }
 
   public async writeStatus(status: object, dbpath: string) {
@@ -88,5 +118,33 @@ export default class Worker {
   public async deleteStorageStatus(clusterName: string, storageId: string) {
     const key = `storage:${clusterName}:${storageId}`;
     await this.redisClient.del(key);
+  }
+
+  public async getAllContainers(clusterName: string) {
+    const keys = await this.redisClient.keys(`container:${clusterName}:*`);
+    const res = {};
+    for (const key of keys) {
+      const value = await this.redisClient.get(key);
+      res[key] = {
+        updatedAt: value.updatedAt,
+        status: JSON.parse(value.status),
+      };
+    }
+
+    return res;
+  }
+
+  public async getAllStorages(clusterName: string) {
+    const keys = await this.redisClient.keys(`storage:${clusterName}:*`);
+    const res = {};
+    for (const key of keys) {
+      const value = await this.redisClient.get(key);
+      res[key] = {
+        updatedAt: value.updatedAt,
+        status: JSON.parse(value.status),
+      };
+    }
+
+    return res;
   }
 }
