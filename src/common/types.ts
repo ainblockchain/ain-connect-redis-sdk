@@ -168,6 +168,10 @@ export type CreateStorageParams = {
 
 export type CreateStorageReturn = {
   storageId: string;
+  nfsInfo?: {
+    ip: string;
+    basePath: string;
+  }
 }
 
 export type DeleteStorageParams = {
