@@ -32,8 +32,11 @@ export type ClusterStatusParams = {
   type: string;
   nodePool: {
     [nodePoolName: string]: {
+      cpu: number, // m
+      memory: number, // Mi
       gpuType: string,
       osImage: string,
+      isAutoScaleEnabled: boolean,
       nodes: {
         [nodeId: string]: {
           capacity: NodeInfo,
@@ -92,6 +95,7 @@ export type DeployParams = {
   maxDuration?: number;
   containerInfo: {
     imageName: string;
+    isNodePort?: boolean;
     nodePoolName: string;
     storageSpec?: {
       [storageId: string]: {
@@ -120,6 +124,12 @@ export type DeployParams = {
 export type DeployReturn = {
   clusterName: string;
   containerId: string;
+  nodePort?: {
+    ip: string;
+    port: {
+      [port: string]: number
+    };
+  };
   endpoint: {
     [port: string]: string
   };
@@ -225,7 +235,8 @@ export type GetClusterListReturn = {
     [nodePoolName: string]: {
       gpuType: string,
       osImage: string,
-      nodes: {
+      isAutoScaleEnabled: boolean,
+      nodes?: {
         [nodeId: string]: {
           capacity: NodeInfo,
           allocatable: NodeInfo,

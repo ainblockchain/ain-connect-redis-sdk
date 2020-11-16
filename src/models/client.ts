@@ -126,20 +126,24 @@ export default class Client {
   public async getClusterList(params?: Types.GetClusterListParams)
     : Promise<Types.GetClusterListReturn[]> {
     const keys = await this.redisClient.keys('worker:info:*');
-    const res: any[] = [];
+    const available: any[] = [];
+    const scalable: any[] = [];
     for (const key of keys) {
       const value = await this.redisClient.get(key);
       const status = JSON.parse(value.status);
 
       const targetNodePool = {};
+      const scalableNodePool = {};
       const nodePoolNames = Object.keys(status.nodePool);
       for (const nodePoolName of nodePoolNames) {
         // params.gpu format: {'v100': 1}
         const targetNode = {};
         const nodePool = status.nodePool[nodePoolName];
+        let matched = false;
         if (!params
           || (!params.gpu && nodePool.gpuType === '')
           || (params.gpu && params.gpu[nodePool.gpuType] !== undefined)) {
+          matched = true;
           const nodeIds = Object.keys(nodePool.nodes);
           for (const nodeId of nodeIds) {
             const node = nodePool.nodes[nodeId];
@@ -156,23 +160,48 @@ export default class Client {
         }
         if (Object.keys(targetNode).length !== 0) {
           targetNodePool[nodePoolName] = {
+            cpu: nodePool.cpu,
+            memory: nodePool.memory,
             gpuType: nodePool.gpuType,
             osImage: nodePool.osImage,
+            isAutoScaleEnabled: nodePool.isAutoScaleEnabled,
             nodes: targetNode,
+          };
+        } else if (matched && nodePool.isAutoScaleEnabled
+          && (!params
+            || (nodePool.cpu >= params.cpu
+              && nodePool.memory >= params.memory))) {
+          // no available node, but nodePool is scalable
+          scalableNodePool[nodePoolName] = {
+            cpu: nodePool.cpu,
+            memory: nodePool.memory,
+            gpuType: nodePool.gpuType,
+            osImage: nodePool.osImage,
+            isAutoScaleEnabled: nodePool.isAutoScaleEnabled,
           };
         }
       }
 
       if (Object.keys(targetNodePool).length !== 0) {
-        res.push({
+        available.push({
           updatedAt: value.updatedAt,
           clusterName: status.clusterName,
           type: status.type,
           nodePool: targetNodePool,
         });
       }
+
+      if (Object.keys(scalableNodePool).length !== 0) {
+        scalable.push({
+          updatedAt: value.updatedAt,
+          clusterName: status.clusterName,
+          type: status.type,
+          nodePool: scalableNodePool,
+        });
+      }
     }
-    return res;
+    // available first, scalable later
+    return [...available, ...scalable];
   }
 
   public async getClusterStatus(params: Types.GetClusterStatusParams)
