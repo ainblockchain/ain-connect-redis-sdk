@@ -125,7 +125,8 @@ export type DeployReturn = {
   clusterName: string;
   containerId: string;
   nodePort?: {
-    ip: string;
+    cluterIp: string;
+    hostIp: string;
     port: {
       [port: string]: number
     };
