@@ -247,4 +247,14 @@ export default class Client {
     }
     return null;
   }
+
+  public async createSnapshotFromContainer(params: Types.CreateSnapshotFromContainerParams)
+    : Promise<Types.RequestReturn<Types.CreateSnapshotFromContainerReturn>> {
+      return await this.sendRequest('createSnapshotFromContainer', params);
+    }
+
+  public async getSnapshotStatus(params: Types.GetSnapshotStatusParams)
+  : Promise<Types.RequestReturn<Types.GetSnapshotStatusReturn>> {
+    return await this.sendRequest('getSnapshotStatus', params);
+  }
 }
