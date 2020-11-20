@@ -13,7 +13,8 @@ export type ListenMethodList = 'deploy' | 'redeploy' | 'undeploy'
  | 'createNamespace' | 'deleteNamespace'
  | 'createStorage' | 'deleteStorage'
  | 'createSecret' | 'getContainerLog'
- | 'putStorageToFtp' | 'getStorageFromFtp';
+ | 'putStorageToFtp' | 'getStorageFromFtp'
+ | 'createSnapshotFromContainer' | 'getSnapshotStatus';
 
 export type workerListenMethod = {
   [type in ListenMethodList]: Function;
@@ -278,3 +279,25 @@ export type GetStorageStatusParams = {
   storageId: string;
 }
 export type GetStorageStatusReturn = StorageStatusParams;
+
+/* createSnapshotFromContainer */
+export type CreateSnapshotFromContainerParams = {
+  clusterName: string;
+  namespaceId: string;
+  containerId: string;
+  userId: string;
+  resultImagePrefix?: string;
+  webhook?: string;
+}
+export type CreateSnapshotFromContainerReturn = {
+  snapshotJobName: string;
+  snapshotJobStatus: string;
+  snapshotDockerImageUri?: string;
+} | null;
+
+/* getSnapshotStatus */
+export type GetSnapshotStatusParams = {
+  clusterName: string;
+  snapshotJobName: string;
+}
+export type GetSnapshotStatusReturn = CreateSnapshotFromContainerReturn;
