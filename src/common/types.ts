@@ -48,22 +48,22 @@ export type ClusterStatusParams = {
   };
 }
 
-/* setPodStatus */
-export type PodStatusParams = {
+export type ConditionError = {
+  [type: string]: {
+      reason?: string;
+      message?: string;
+  }
+}
+
+export declare type PodStatusParams = {
   podName: string;
   namespaceId: string;
   status: {
-    phase: PodPhaseList;
-    message?: string;
-    startTime?: string;
-    condition?: {
-      type: ConditionType;
-      status: boolean;
-      reason?: string;
-      message?: string;
-    }
+      phase: PodPhaseList;
+      conditionError?: ConditionError;
   };
-}
+};
+
 export type SetPodStatusParams = {
   clusterName: string;
   containerId: string;
