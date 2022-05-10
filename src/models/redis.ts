@@ -84,11 +84,15 @@ export default class RedisClient {
   }
 
   public async keys(pattern: string) {
+    // NOTE(minho): Using scan (not keys) is for command-multiplexing optimization.
+    //              Yes it's slower than 'keys'.
+    //              Default scan's count is 10.
+    // NOTE(redis): https://redis.io/commands/scan/
     const scan = promisify(this.client.scan).bind(this.client);
     const keys = [];
     let cursor = '0';
     do {
-      const res = await scan(cursor, 'MATCH', pattern);
+      const res = await scan(cursor, 'MATCH', pattern, 'COUNT', '1000');
       const [nextCursor, curKeys] = res;
       cursor = nextCursor;
       keys.push(...curKeys);
